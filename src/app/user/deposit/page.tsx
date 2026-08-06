@@ -10,16 +10,15 @@ import { useToast } from '@/components/ToastProvider';
 import { ConnectButton } from '@/components/ConnectButton';
 import { useAccount, useChainId, usePublicClient, useWriteContract } from 'wagmi';
 import { parseUnits, type Hash } from 'viem';
-import Image from 'next/image';
+import { FaCopy, FaCheck, FaWallet, FaExclamationTriangle, FaArrowDown } from 'react-icons/fa';
 
 const ERC20_ABI = [
     { name: 'decimals', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'uint8' }] },
     { name: 'transfer', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ name: '', type: 'bool' }] },
 ] as const;
 
-// Known USDT addresses (BSC mainnet). Set testnet via env if needed.
 const USDT_ADDRESSES: Record<number, `0x${string}` | undefined> = {
-    56: '0x55d398326f99059fF775485246999027B3197955', // BSC mainnet};
+    56: '0x55d398326f99059fF775485246999027B3197955', // BSC mainnet
 };
 
 export default function DepositPage() {
@@ -31,9 +30,7 @@ export default function DepositPage() {
 
     const [selectedWallet, setSelectedWallet] = useState<any>(null);
     const [amount, setAmount] = useState('');
-    const [txHash, setTxHash] = useState('');
     const [copied, setCopied] = useState(false);
-    const [step, setStep] = useState<'transfer' | 'confirm'>('transfer');
     const [isProcessing, setIsProcessing] = useState(false);
 
     // wagmi
@@ -42,16 +39,13 @@ export default function DepositPage() {
     const publicClient = usePublicClient();
     const { writeContractAsync } = useWriteContract();
 
-    // Resolve USDT contract for current chain
     const usdtAddress = useMemo(() => USDT_ADDRESSES[chainId], [chainId]);
 
     useEffect(() => {
         dispatch(fetchWallets());
         dispatch(fetchProfile());
-        console.log(profile);
     }, [dispatch]);
 
-    // Randomly pick a wallet when wallets are loaded
     useEffect(() => {
         if (wallets.length > 0 && !selectedWallet) {
             const randomIndex = Math.floor(Math.random() * wallets.length);
@@ -64,7 +58,7 @@ export default function DepositPage() {
         if (addr) {
             navigator.clipboard.writeText(addr);
             setCopied(true);
-            showToast('Address copied to clipboard!', 'success');
+            showToast('Deposit address copied to clipboard!', 'success');
             setTimeout(() => setCopied(false), 2000);
         }
     };
@@ -73,7 +67,7 @@ export default function DepositPage() {
         setIsProcessing(true);
         try {
             if (!isConnected) {
-                showToast('Please connect your wallet first', 'error');
+                showToast('Please connect your web3 wallet first', 'error');
                 return;
             }
             if (!selectedWallet?.erc20address) {
@@ -82,7 +76,7 @@ export default function DepositPage() {
             }
             const depositAmount = parseFloat(amount);
             if (isNaN(depositAmount) || depositAmount <= 0) {
-                showToast('Please enter a valid amount', 'error');
+                showToast('Please enter a valid deposit amount', 'error');
                 return;
             }
             if (!usdtAddress) {
@@ -94,7 +88,6 @@ export default function DepositPage() {
                 return;
             }
 
-            // Read token decimals
             const decimals = await publicClient.readContract({
                 address: usdtAddress,
                 abi: ERC20_ABI,
@@ -103,7 +96,6 @@ export default function DepositPage() {
 
             const value = parseUnits(amount, Number(decimals));
 
-            // Execute ERC20 transfer to your deposit address
             const hash = await writeContractAsync({
                 address: usdtAddress,
                 abi: ERC20_ABI,
@@ -111,14 +103,12 @@ export default function DepositPage() {
                 args: [selectedWallet.erc20address as `0x${string}`, value],
             }) as Hash;
 
-            showToast('Transaction sent. Waiting for confirmation...', 'info');
+            showToast('Transaction sent. Waiting for on-chain confirmation...', 'info');
 
-            // Wait for confirmation
             await publicClient.waitForTransactionReceipt({ hash });
 
             showToast('USDT transfer confirmed on-chain ✔', 'success');
 
-            // Update backend balance after success
             if (profile?.user?.id) {
                 await dispatch(updateBalance({
                     user_id: profile.user.id,
@@ -127,15 +117,11 @@ export default function DepositPage() {
                     txn_hash: hash,
                 })).unwrap();
 
-                showToast('Balance updated successfully 🎉', 'success');
+                showToast('Staking balance updated successfully 🎉', 'success');
                 await dispatch(fetchProfile());
             }
 
-            // Reset UI
-            setStep('transfer');
             setAmount('');
-            setTxHash('');
-
         } catch (err: any) {
             const msg = err?.shortMessage || err?.message || 'Transfer failed';
             showToast(msg, 'error');
@@ -144,213 +130,84 @@ export default function DepositPage() {
         }
     };
 
-    const handleConfirmTransfer = async () => {
-        if (!txHash || !amount || !profile?.user?.id) {
-            showToast('Please fill all fields', 'error');
-            return;
-        }
-
-        const depositAmount = parseFloat(amount);
-        if (isNaN(depositAmount) || depositAmount <= 0) {
-            showToast('Please enter a valid amount', 'error');
-            return;
-        }
-
-        try {
-            // await dispatch(updateBalance({
-            //     user_id: profile.user.id,
-            //     balance: depositAmount,
-            // })).unwrap();
-
-            showToast('Deposit confirmed! Balance updated successfully 🎉', 'success');
-
-            await dispatch(fetchProfile());
-
-            setStep('transfer');
-            setAmount('');
-            setTxHash('');
-
-            const randomIndex = Math.floor(Math.random() * wallets.length);
-            setSelectedWallet(wallets[randomIndex]);
-        } catch (err: any) {
-            showToast(err?.message || 'Failed to update balance', 'error');
-        }
-    };
-
     if (walletsLoading || !selectedWallet) {
         return (
-            <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-center py-10 px-4">
-                <div className="card-premium p-8 rounded-lg">
-                    <p className="text-pm-gold-500">Loading wallet address...</p>
-                </div>
-            </main>
-        );
-    }
-
-    if (wallets.length === 0) {
-        return (
-            <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-center py-10 px-4">
-                <div className="card-premium p-8 rounded-lg">
-                    <p className="text-pm-gold-500">No wallets available. Please contact support.</p>
-                </div>
-            </main>
+            <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-8 text-center text-xs text-[#8B85A3]">
+                Loading deposit address...
+            </div>
         );
     }
 
     return (
-        <main className="flex min-h-screen w-full max-w-4xl flex-col items-center py-10 px-4">
-            {/* Processing Overlay */}
-            {isProcessing && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-                    <div className="card-premium p-8 rounded-lg text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-pm-gold-500 mx-auto mb-4"></div>
-                        <p className="text-pm-gold-500 text-xl font-semibold">Processing Transaction...</p>
-                        <p className="text-pm-muted text-sm mt-2">Please do not close or navigate away</p>
-                    </div>
+        <div className="space-y-6 pb-8">
+            {/* Header Banner */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-bold text-[#F4F2FB] tracking-tight">Deposit USDT</h1>
+                    <p className="text-xs text-[#8B85A3]">Add funds to your StakePro wallet (BEP20 on BSC)</p>
                 </div>
-            )}
+            </div>
 
-            <div className="w-full max-w-2xl card-premium rounded-lg shadow-lg p-6">
-                <h1 className="text-3xl font-bold mb-6 text-pm-gold-500">Deposit USDT</h1>
-
-                {/* Current Balance */}
-                <div className="mb-6 p-4 bg-pm-brown-900/50 rounded-lg border border-pm-gold-900/30">
-                    <p className="text-sm text-pm-muted mb-1">Current Balance</p>
-                    <p className="text-2xl font-bold text-pm-gold-500">
-                        ${Number(profile?.user?.balance ?? 0).toFixed(2)}
+            {/* Current Balance Overview */}
+            <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-5 shadow-xl space-y-4">
+                <div>
+                    <p className="text-xs text-[#8B85A3]">Current Staking Balance</p>
+                    <p className="text-2xl font-bold text-[#F4F2FB]">
+                        ${Number(profile?.user?.balance ?? 0).toFixed(2)} USDT
                     </p>
                 </div>
 
-                {/* Step Indicator */}
-                <div className="mb-8 flex justify-between items-center">
-                    <div className={`flex items-center ${step === 'transfer' ? 'text-pm-gold-500' : 'text-pm-muted'}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step === 'transfer' ? 'bg-pm-gold-500 text-pm-black' : 'bg-pm-brown-700'}`}>
-                            1
-                        </div>
-                        <span className="ml-2">Transfer USDT</span>
-                    </div>
-                    <div className={`h-1 flex-1 mx-4 ${step === 'confirm' ? 'bg-pm-gold-500' : 'bg-pm-brown-700'}`}></div>
-                    <div className={`flex items-center ${step === 'confirm' ? 'text-pm-gold-500' : 'text-pm-muted'}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step === 'confirm' ? 'bg-pm-gold-500 text-pm-black' : 'bg-pm-brown-700'}`}>
-                            2
-                        </div>
-                        <span className="ml-2">Confirm</span>
+                {/* Web3 Connect Button */}
+                <div className="pt-2">
+                    <ConnectButton />
+                </div>
+
+                {/* Deposit Address Box */}
+                <div className="rounded-2xl border border-[#221E2F] bg-[#1A1626] p-4 space-y-2">
+                    <p className="text-xs font-semibold text-[#8B85A3]">Official Deposit Address (BSC / BEP20)</p>
+                    <div className="flex items-center justify-between gap-3">
+                        <span className="font-mono text-xs font-semibold text-[#A78BFA] break-all">
+                            {selectedWallet.erc20address}
+                        </span>
+                        <button
+                            onClick={copyToClipboard}
+                            className="flex items-center gap-1.5 rounded-xl bg-[#7C5CF0]/20 px-3 py-2 text-xs font-semibold text-[#A78BFA] transition hover:bg-[#7C5CF0]/30 flex-shrink-0"
+                        >
+                            {copied ? <FaCheck className="h-3 w-3 text-[#22C55E]" /> : <FaCopy className="h-3 w-3" />}
+                            <span>{copied ? 'Copied' : 'Copy'}</span>
+                        </button>
                     </div>
                 </div>
 
-                {/* Step 1: Transfer USDT */}
-                {step === 'transfer' && (
-                    <div>
-                        <h2 className="text-xl font-semibold mb-4 text-pm-gold-500">Transfer USDT</h2>
+                {/* Warning Alert */}
+                <div className="flex items-start gap-2.5 rounded-2xl border border-[#E24B4A]/30 bg-[#E24B4A]/10 p-3.5 text-xs text-[#E24B4A]">
+                    <FaExclamationTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                    <span>
+                        Only transfer USDT via <strong>BEP20 (Binance Smart Chain)</strong> network to this address.
+                    </span>
+                </div>
 
-                        <div className="mb-4">
-                            <ConnectButton />
-                        </div>
+                {/* Amount Form */}
+                <div className="space-y-3 pt-2">
+                    <label className="text-xs font-semibold text-[#F4F2FB]">Deposit Amount (USDT)</label>
+                    <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="Enter USDT amount"
+                        className="w-full rounded-2xl border border-[#221E2F] bg-[#1A1626] py-3.5 px-4 text-sm font-semibold text-[#F4F2FB] placeholder-[#6F6A83] focus:border-[#7C5CF0] focus:outline-none"
+                    />
 
-                        <div className="mb-6 p-4 bg-pm-brown-900/50 rounded-lg border border-pm-gold-900/30">
-                            <p className="text-sm text-pm-muted mb-2">Deposit Address</p>
-                            <div className="flex items-center gap-2">
-                                <p className="flex-1 font-mono text-pm-gold-500 break-all">{selectedWallet.erc20address}</p>
-                                <button
-                                    onClick={copyToClipboard}
-                                    className="px-4 py-2 bg-pm-gold-900 text-pm-gold-500 rounded hover:bg-pm-gold-500 hover:text-pm-black transition"
-                                >
-                                    {copied ? '✓' : 'Copy'}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="mb-6 p-4 bg-yellow-900/20 border border-yellow-600/50 rounded-lg">
-                            <p className="text-yellow-400 text-sm">
-                                ⚠️ Only send USDT (BEP20 on BSC) to this address. Sending other tokens may result in loss.
-                            </p>
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-pm-gold-500 mb-2">
-                                Amount (USDT)
-                            </label>
-                            <input
-                                type="number"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                placeholder="Enter amount"
-                                className="w-full px-4 py-3 bg-pm-char border border-pm-gold-900 text-pm-gold-500 rounded-lg focus:ring-2 focus:ring-pm-gold-500 focus:border-transparent placeholder-pm-muted"
-                                step="0.01"
-                                min="0"
-                            />
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <button
-                                onClick={handleWalletTransfer}
-                                disabled={!isConnected || !amount || parseFloat(amount) <= 0 || !usdtAddress || isProcessing}
-                                className="flex-1 btn-gold px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isProcessing ? 'Processing...' : 'Send from connected wallet'}
-                            </button>
-                            {/* <button
-                                onClick={() => setStep('confirm')}
-                                disabled={!amount || parseFloat(amount) <= 0}
-                                className="flex-1 bg-pm-brown-700 text-pm-gold-500 px-6 py-3 rounded-lg hover:bg-pm-brown-500 transition border border-pm-gold-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                I’ve sent USDT (enter hash)
-                            </button> */}
-                        </div>
-                    </div>
-                )}
-
-                {/* Step 2: Confirm Transaction (manual flow) */}
-                {step === 'confirm' && (
-                    <div>
-                        <h2 className="text-xl font-semibold mb-4 text-pm-gold-500">Confirm Transaction</h2>
-
-                        <div className="mb-6 p-4 bg-pm-brown-900/50 rounded-lg border border-pm-gold-900/30">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-sm text-pm-muted">Amount</p>
-                                    <p className="text-lg font-semibold text-pm-gold-500">${amount} USDT</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-pm-muted">Wallet</p>
-                                    <p className="text-lg font-semibold text-pm-gold-500 font-mono">
-                                        {String(selectedWallet.erc20address).substring(0, 8)}...
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-pm-gold-500 mb-2">
-                                Transaction Hash
-                            </label>
-                            <input
-                                type="text"
-                                value={txHash}
-                                onChange={(e) => setTxHash(e.target.value)}
-                                placeholder="Enter transaction hash"
-                                className="w-full px-4 py-3 bg-pm-char border border-pm-gold-900 text-pm-gold-500 rounded-lg focus:ring-2 focus:ring-pm-gold-500 focus:border-transparent placeholder-pm-muted font-mono"
-                            />
-                        </div>
-
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setStep('transfer')}
-                                className="flex-1 bg-pm-brown-700 text-pm-gold-500 px-6 py-3 rounded-lg hover:bg-pm-brown-500 transition border border-pm-gold-900/30"
-                            >
-                                Back
-                            </button>
-                            <button
-                                onClick={handleConfirmTransfer}
-                                disabled={balanceLoading}
-                                className="flex-1 btn-gold px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {balanceLoading ? 'Processing...' : 'Confirm Deposit'}
-                            </button>
-                        </div>
-                    </div>
-                )}
+                    <button
+                        onClick={handleWalletTransfer}
+                        disabled={!isConnected || !amount || parseFloat(amount) <= 0 || !usdtAddress || isProcessing}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#7C5CF0] py-4 text-sm font-semibold text-[#F4F2FB] shadow-lg shadow-[#7C5CF0]/30 transition hover:bg-[#6A49E0] active:scale-[0.99] disabled:opacity-50"
+                    >
+                        <FaArrowDown className="h-4 w-4" />
+                        <span>{isProcessing ? 'Processing Deposit...' : 'Deposit from Connected Wallet'}</span>
+                    </button>
+                </div>
             </div>
-        </main>
+        </div>
     );
 }

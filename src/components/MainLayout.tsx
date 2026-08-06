@@ -25,7 +25,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <Provider store={store}>
             <ToastProvider>
                 <HydrationWrapper>
-                    <div className="min-h-screen bg-[#07111f] font-sans text-slate-100">
+                    <div className="min-h-screen bg-[#0A0A0F] font-sans text-[#F4F2FB]">
                         {children}
                     </div>
                 </HydrationWrapper>

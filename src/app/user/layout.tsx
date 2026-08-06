@@ -39,8 +39,8 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
         <>
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <div className="min-h-screen bg-[#07111f] text-slate-100">
-                <main className="container mx-auto px-4 pt-24 pb-28 lg:px-6">
+            <div className="min-h-screen bg-[#0A0A0F] text-[#F4F2FB]">
+                <main className="container mx-auto px-4 pt-20 pb-32 max-w-4xl lg:px-6">
                     {children}
                 </main>
                 <BottomBar />

@@ -1,13 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #07111f;
-  --foreground: #f8fafc;
-  --panel: #0d1a2e;
-  --panel-strong: #101d32;
-  --violet: #8b5cf6;
-  --cyan: #22d3ee;
-  --muted: #94a3b8;
+  --background: #0A0A0F;
+  --foreground: #F4F2FB;
+  --panel: #14111D;
+  --panel-strong: #1A1626;
+  --border-divider: #221E2F;
+  --accent-primary: #7C5CF0;
+  --accent-light: #A78BFA;
+  --accent-lighter: #B9A4F7;
+  --text-primary: #F4F2FB;
+  --text-secondary: #8B85A3;
+  --text-tertiary: #6F6A83;
+  --success: #22C55E;
+  --error: #E24B4A;
 }
 
 @theme inline {
@@ -15,12 +21,18 @@
   --color-foreground: var(--foreground);
   --color-panel: var(--panel);
   --color-panel-strong: var(--panel-strong);
-  --color-accent-violet: var(--violet);
-  --color-accent-cyan: var(--cyan);
-  --color-muted: var(--muted);
+  --color-border-divider: var(--border-divider);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-light: var(--accent-light);
+  --color-accent-lighter: var(--accent-lighter);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-success: var(--success);
+  --color-error: var(--error);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins), var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 html {
@@ -31,10 +43,11 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(139, 92, 246, 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(124, 92, 240, 0.15), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(167, 139, 250, 0.08), transparent 35%),
     var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans);
 }
 
 * {
@@ -42,19 +55,19 @@ body {
 }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(124, 92, 240, 0.35);
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b1528;
+  background: #0A0A0F;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.9), rgba(34, 211, 238, 0.8));
+  background: linear-gradient(180deg, rgba(124, 92, 240, 0.8), rgba(167, 139, 250, 0.6));
   border-radius: 9999px;
 }
 
