@@ -46,83 +46,83 @@ export default function UserSupportPage() {
 
     const getStatusBadge = (status: string) => {
         const styles: Record<string, string> = {
-            open: "bg-green-100 text-green-800",
-            pending: "bg-yellow-100 text-yellow-800",
-            closed: "bg-red-100 text-red-800",
+            open: "border border-emerald-500/20 bg-emerald-500/10 text-emerald-200",
+            pending: "border border-amber-500/20 bg-amber-500/10 text-amber-200",
+            closed: "border border-rose-500/20 bg-rose-500/10 text-rose-200",
         };
-        return <span className={`px-2 py-1 rounded text-xs font-medium ${styles[status] || "bg-gray-100 text-gray-800"}`}>{status}</span>;
+        return <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || "border border-slate-700 bg-slate-800 text-slate-200"}`}>{status}</span>;
     };
 
     const getPriorityBadge = (priority: string) => {
         const styles: Record<string, string> = {
-            low: "bg-blue-100 text-blue-800",
-            normal: "bg-gray-100 text-gray-800",
-            high: "bg-orange-100 text-orange-800",
-            urgent: "bg-red-100 text-red-800",
+            low: "border border-sky-500/20 bg-sky-500/10 text-sky-200",
+            normal: "border border-slate-700 bg-slate-800 text-slate-200",
+            high: "border border-orange-500/20 bg-orange-500/10 text-orange-200",
+            urgent: "border border-rose-500/20 bg-rose-500/10 text-rose-200",
         };
-        return <span className={`px-2 py-1 rounded text-xs font-medium ${styles[priority] || "bg-gray-100 text-gray-800"}`}>{priority}</span>;
+        return <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[priority] || "border border-slate-700 bg-slate-800 text-slate-200"}`}>{priority}</span>;
     };
 
     const totalPages = Math.ceil(pagination.total / pagination.size);
 
     return (
-        <div className="py-15">
-            <div className="flex items-center justify-between mb-6">
+        <div className="py-8 space-y-6 text-slate-100">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold">Support Tickets</h1>
-                    <p className="text-gray-600 text-sm mt-1">Manage your support requests</p>
+                    <p className="text-slate-400 text-sm mt-1">Manage your support requests</p>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    className="bg-cyan-500 text-slate-950 px-4 py-2 rounded-full hover:bg-cyan-400 transition"
                 >
                     {showForm ? "Cancel" : "+ New Ticket"}
                 </button>
             </div>
 
-            {error && <div className="mb-4 p-4 bg-red-100 text-red-800 rounded">{error}</div>}
+            {error && <div className="mb-4 p-4 rounded-3xl bg-rose-500/10 text-rose-200 border border-rose-500/20">{error}</div>}
 
             {showForm && (
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
-                    <h2 className="text-lg font-semibold mb-4">Create New Ticket</h2>
+                <div className="bg-[#0f1a2b]/95 rounded-[2rem] border border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.35)] p-6 mb-6">
+                    <h2 className="text-lg font-semibold mb-4 text-white">Create New Ticket</h2>
                     <form onSubmit={handleCreateTicket} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Subject</label>
                             <input
                                 type="text"
                                 value={formData.subject}
                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full rounded-3xl border border-white/10 bg-white/5 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                                 placeholder="Brief description of your issue"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Message</label>
                             <textarea
                                 value={formData.message}
                                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
+                                className="w-full rounded-3xl border border-white/10 bg-white/5 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 h-32"
                                 placeholder="Describe your issue in detail"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Attach Image (optional)</label>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Attach Image (optional)</label>
                             <input
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full rounded-3xl border border-white/10 bg-white/5 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                             />
                             {imageFile && (
-                                <p className="text-sm text-gray-600 mt-1">Selected: {imageFile.name}</p>
+                                <p className="text-sm text-slate-400 mt-1">Selected: {imageFile.name}</p>
                             )}
                         </div>
                         <button
                             type="submit"
                             disabled={creating}
-                            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:bg-gray-400"
+                            className="w-full bg-cyan-500 text-slate-950 py-2 rounded-3xl hover:bg-cyan-400 transition disabled:bg-slate-700"
                         >
                             {creating ? "Creating..." : "Create Ticket"}
                         </button>
@@ -130,62 +130,62 @@ export default function UserSupportPage() {
                 </div>
             )}
 
-            <div className="flex gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-6">
                 <button
                     onClick={() => setStatusFilter("all")}
-                    className={`px-4 py-2 rounded transition ${statusFilter === "all" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                    className={`px-4 py-2 rounded-full transition ${statusFilter === "all" ? "bg-cyan-500 text-slate-950" : "bg-white/10 text-slate-300 hover:bg-white/20"}`}
                 >
                     All
                 </button>
                 <button
                     onClick={() => setStatusFilter("open")}
-                    className={`px-4 py-2 rounded transition ${statusFilter === "open" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                    className={`px-4 py-2 rounded-full transition ${statusFilter === "open" ? "bg-emerald-500 text-slate-950" : "bg-white/10 text-slate-300 hover:bg-white/20"}`}
                 >
                     Open
                 </button>
                 <button
                     onClick={() => setStatusFilter("pending")}
-                    className={`px-4 py-2 rounded transition ${statusFilter === "pending" ? "bg-yellow-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                    className={`px-4 py-2 rounded-full transition ${statusFilter === "pending" ? "bg-amber-500 text-slate-950" : "bg-white/10 text-slate-300 hover:bg-white/20"}`}
                 >
                     Pending
                 </button>
                 <button
                     onClick={() => setStatusFilter("closed")}
-                    className={`px-4 py-2 rounded transition ${statusFilter === "closed" ? "bg-red-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+                    className={`px-4 py-2 rounded-full transition ${statusFilter === "closed" ? "bg-rose-500 text-slate-950" : "bg-white/10 text-slate-300 hover:bg-white/20"}`}
                 >
                     Closed
                 </button>
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-[#0d1726]/95 rounded-[2rem] border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.25)] overflow-hidden">
                 {loadingList ? (
-                    <div className="p-8 text-center text-gray-500">Loading tickets...</div>
+                    <div className="p-8 text-center text-slate-400">Loading tickets...</div>
                 ) : tickets.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No tickets found</div>
+                    <div className="p-8 text-center text-slate-400">No tickets found</div>
                 ) : (
                     <div>
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-white/10">
+                                <thead className="bg-white/5">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subject</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">ID</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Subject</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Priority</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Created</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-[#08101a] divide-y divide-white/10">
                                     {tickets.map((ticket) => (
-                                        <tr key={ticket.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 text-sm text-gray-900">#{ticket.id}</td>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{ticket.subject}</td>
+                                        <tr key={ticket.id} className="hover:bg-white/5">
+                                            <td className="px-6 py-4 text-sm text-slate-200">#{ticket.id}</td>
+                                            <td className="px-6 py-4 text-sm font-medium text-white">{ticket.subject}</td>
                                             <td className="px-6 py-4 text-sm">{getPriorityBadge(ticket.priority)}</td>
                                             <td className="px-6 py-4 text-sm">{getStatusBadge(ticket.status)}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-500">{new Date(ticket.created_at).toLocaleDateString()}</td>
+                                            <td className="px-6 py-4 text-sm text-slate-400">{new Date(ticket.created_at).toLocaleDateString()}</td>
                                             <td className="px-6 py-4 text-sm">
-                                                <Link href={`/user/support/${ticket.id}`} className="text-blue-600 hover:text-blue-800 font-medium">
+                                                <Link href={`/user/support/${ticket.id}`} className="text-cyan-300 hover:text-cyan-200 font-medium">
                                                     View
                                                 </Link>
                                             </td>
@@ -197,21 +197,21 @@ export default function UserSupportPage() {
 
                         {totalPages > 1 && (
                             <div className="flex items-center justify-between px-6 py-4 border-t">
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm text-slate-400">
                                     Page {currentPage} of {totalPages}
                                 </div>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                         disabled={currentPage === 1}
-                                        className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                        className="px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed transition"
                                     >
                                         Previous
                                     </button>
                                     <button
                                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                         disabled={currentPage === totalPages}
-                                        className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                        className="px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed transition"
                                     >
                                         Next
                                     </button>

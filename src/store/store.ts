@@ -10,9 +10,7 @@ import supportReducer from './supportSlice';
 import transactionsReducer from './transactionSlice';
 import walletsReducer from './walletSlice';
 import withdrawRequestsReducer from './withdrawRequestsSlice';
-import bannersReducer from './bannersSlice';
 import penaltyReducer from './penaltySlice';
-import milestonesReducer from './milestonesSlice';
 import usdtStakingReducer from './usdtStakingSlice';
 
 export const store = configureStore({
@@ -27,9 +25,7 @@ export const store = configureStore({
         transactions: transactionsReducer,
         wallets: walletsReducer,
         withdrawRequests: withdrawRequestsReducer,
-        banners: bannersReducer,
         penalty: penaltyReducer,
-        milestones: milestonesReducer,
         usdtStaking: usdtStakingReducer,
     },
 });

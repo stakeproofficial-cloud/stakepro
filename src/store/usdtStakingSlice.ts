@@ -41,7 +41,7 @@ export const fetchBalance = createAsyncThunk(
     'usdtStaking/balance',
     async (_, { rejectWithValue }) => {
         try {
-            const r = await api.get('/usdt-staking/balance');
+            const r = await api.get('/balance');
             return r.data;
         } catch (err: any) {
             return rejectWithValue(err?.response?.data || { message: err.message });

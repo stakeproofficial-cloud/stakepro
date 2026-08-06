@@ -36,11 +36,15 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     if (!user) return null;
 
     return (
-        <><Header toggleSidebar={toggleSidebar} /><Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} /><div className="min-h-screen bg-gradient-to-br from-pm-ink via-pm-char to-pm-brown-900 w-full">
-            <main className="container mx-auto px-2 py-8">
-                {children}
-            </main>
-            <BottomBar />
-        </div></>
+        <>
+            <Header toggleSidebar={toggleSidebar} />
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            <div className="min-h-screen bg-[#07111f] text-slate-100">
+                <main className="container mx-auto px-4 pt-24 pb-28 lg:px-6">
+                    {children}
+                </main>
+                <BottomBar />
+            </div>
+        </>
     );
 }

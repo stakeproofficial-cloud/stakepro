@@ -55,54 +55,69 @@ export default function RegisterPage() {
     };
 
     return (
-        <main className="flex flex-col items-center justify-center h-screen">
-            <form onSubmit={submit} className="bg-white shadow-md p-6 rounded w-80">
-                <h1 className="text-xl font-bold mb-4">Register</h1>
-                <input
-                    placeholder="Name"
-                    className="border p-2 mb-2 w-full"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-                <input
-                    placeholder="Email"
-                    type="email"
-                    className="border p-2 mb-2 w-full"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-                <input
-                    placeholder="Password"
-                    type="password"
-                    className="border p-2 mb-2 w-full"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                />
-                <input
-                    placeholder="Confirm Password"
-                    type="password"
-                    className="border p-2 mb-2 w-full"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <input
-                    placeholder="Referral Code"
-                    type="text"
-                    className="border p-2 mb-2 w-full"
-                    value={form.ref}
-                    onChange={(e) => setForm({ ...form, ref: e.target.value })}
-                />
+        <main className="flex min-h-screen items-center justify-center bg-[#07111f] px-4 py-10 text-slate-100">
+            <form onSubmit={submit} className="w-full max-w-md rounded-[28px] border border-white/10 bg-[#0d1a2e] p-8 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
+                <h1 className="text-2xl font-semibold mb-6 text-white">Create your account</h1>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Name
+                    <input
+                        placeholder="Name"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#101d32] px-4 py-3 text-slate-100 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    />
+                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Email
+                    <input
+                        placeholder="Email"
+                        type="email"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#101d32] px-4 py-3 text-slate-100 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    />
+                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Password
+                    <input
+                        placeholder="Password"
+                        type="password"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#101d32] px-4 py-3 text-slate-100 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    />
+                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Confirm Password
+                    <input
+                        placeholder="Confirm Password"
+                        type="password"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#101d32] px-4 py-3 text-slate-100 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-4">
+                    Referral Code
+                    <input
+                        placeholder="Referral Code"
+                        type="text"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#101d32] px-4 py-3 text-slate-100 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20"
+                        value={form.ref}
+                        onChange={(e) => setForm({ ...form, ref: e.target.value })}
+                    />
+                </label>
                 <button
-                    className="bg-green-600 text-white w-full py-2 rounded disabled:opacity-50"
+                    className="w-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={submitting}
                 >
                     {submitting ? "Registering..." : "Register"}
                 </button>
-                {msg && <p className="text-sm text-center mt-2 text-blue-600">{msg}</p>}
-                <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-600">
+                {msg && <p className="text-sm text-center mt-4 text-cyan-300">{msg}</p>}
+                <div className="mt-6 text-center text-sm text-slate-400">
+                    <p>
                         Already have an account?{" "}
-                        <Link href="/login" className="text-blue-600 hover:underline font-semibold">
+                        <Link href="/login" className="font-semibold text-violet-300 hover:text-violet-200">
                             Login here
                         </Link>
                     </p>

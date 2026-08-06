@@ -54,7 +54,7 @@ const testimonials = [
   },
   {
     quote:
-      "MoneyMartx gave us the clarity and confidence to scale faster without sacrificing control. It looks polished and performs even better.",
+      "stakepro gave us the clarity and confidence to scale faster without sacrificing control. It looks polished and performs even better.",
     author: "Priya Shah",
     role: "Operations Director, Vanta Grid",
   },
@@ -114,9 +114,9 @@ export default function Home() {
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8" aria-label="Main navigation">
           <Link href="/" className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07111f]">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-violet-400 to-cyan-400 shadow-lg shadow-violet-500/30">
-              <Image src="/logo.png" alt="MoneyMartx logo" width={24} height={24} className="rounded-lg" unoptimized />
+              <Image src="/logo.png" alt="stakepro logo" width={24} height={24} className="rounded-lg" unoptimized />
             </span>
-            <span className="text-lg font-semibold tracking-tight text-white">MoneyMartx</span>
+            <span className="text-lg font-semibold tracking-tight text-white">stakepro</span>
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
@@ -418,8 +418,8 @@ export default function Home() {
             <article
               key={plan.name}
               className={`rounded-3xl border p-6 shadow-[0_14px_40px_rgba(15,23,42,0.38)] ${plan.highlighted
-                  ? "border-violet-400/60 bg-gradient-to-b from-violet-500/15 to-[#121f36]"
-                  : "border-white/10 bg-[#0d1a2e]"
+                ? "border-violet-400/60 bg-gradient-to-b from-violet-500/15 to-[#121f36]"
+                : "border-white/10 bg-[#0d1a2e]"
                 }`}
             >
               <div className="flex items-center justify-between">
@@ -450,8 +450,8 @@ export default function Home() {
               <Link
                 href="#"
                 className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07111f] ${plan.highlighted
-                    ? "bg-gradient-to-r from-violet-500 to-cyan-400 text-white shadow-lg shadow-violet-500/20 hover:-translate-y-0.5"
-                    : "border border-white/10 bg-white/5 text-slate-100 hover:border-violet-400/50 hover:bg-violet-500/10"
+                  ? "bg-gradient-to-r from-violet-500 to-cyan-400 text-white shadow-lg shadow-violet-500/20 hover:-translate-y-0.5"
+                  : "border border-white/10 bg-white/5 text-slate-100 hover:border-violet-400/50 hover:bg-violet-500/10"
                   }`}
               >
                 {plan.price === "Custom" ? "Talk to sales" : "Choose plan"}
@@ -517,9 +517,9 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-violet-400 to-cyan-400 shadow-lg shadow-violet-500/30">
-              <Image src="/logo.png" alt="MoneyMartx logo" width={22} height={22} className="rounded-lg" unoptimized />
+              <Image src="/logo.png" alt="stakepro logo" width={22} height={22} className="rounded-lg" unoptimized />
             </span>
-            <span className="text-lg font-semibold text-white">MoneyMartx</span>
+            <span className="text-lg font-semibold text-white">stakepro</span>
           </div>
 
           <div className="flex flex-wrap gap-6 text-sm text-slate-300">
@@ -529,7 +529,7 @@ export default function Home() {
             <Link href="#" className="transition hover:text-white">Support</Link>
           </div>
 
-          <p className="text-sm text-slate-400">© 2026 MoneyMartx. All rights reserved.</p>
+          <p className="text-sm text-slate-400">© 2026 stakepro. All rights reserved.</p>
         </div>
       </footer>
     </main>
