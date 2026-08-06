@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchUsers } from "@/store/adminSlice";
 import { fetchTransactions } from "@/store/transactionSlice";
 import { fetchAdminWithdraws } from "@/store/withdrawRequestsSlice";
-import { fetchMilestones } from "@/store/milestonesSlice";
 import Link from "next/link";
 
 export default function AdminDashboard() {
@@ -12,13 +11,11 @@ export default function AdminDashboard() {
     const { users } = useAppSelector((s) => s.admin);
     const { items: transactions } = useAppSelector((s) => s.transactions);
     const { adminList: withdrawals } = useAppSelector((s) => s.withdrawRequests);
-    const { items: milestones } = useAppSelector((s) => s.milestones);
 
     useEffect(() => {
         dispatch(fetchUsers() as any);
         dispatch(fetchTransactions());
         dispatch(fetchAdminWithdraws());
-        dispatch(fetchMilestones());
     }, [dispatch]);
 
     const totalBalance = users.reduce((sum, user) => sum + (Number(user.balance) || 0), 0);
@@ -33,13 +30,6 @@ export default function AdminDashboard() {
             icon: "👥",
             color: "bg-blue-500",
             link: "/admin/users"
-        },
-        {
-            title: "Milestones",
-            value: milestones.length,
-            icon: "🏆",
-            color: "bg-emerald-500",
-            link: "/admin/milestones"
         },
         {
             title: "Total Balance",

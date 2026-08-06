@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useToast } from '@/components/ToastProvider';
 import {
@@ -11,9 +10,9 @@ import {
 } from '@/store/usdtStakingSlice';
 import { fetchProfile } from '@/store/authSlice';
 import { parseDecimal } from '@/utils/validators';
+import { FaCoins, FaBolt, FaLayerGroup, FaCheckCircle, FaStar } from 'react-icons/fa';
 
 export default function UsdtStakingPage() {
-    const router = useRouter();
     const dispatch = useAppDispatch();
     const { showToast } = useToast();
 
@@ -32,14 +31,29 @@ export default function UsdtStakingPage() {
             dispatch(fetchStakings());
             dispatch(fetchBalance());
         }
-        console.log(stakings);
     }, [dispatch, profile]);
+
+    const currentBalance = balance?.balance ?? Number(profile?.user?.balance ?? 0);
+
+    const handleQuickSelect = (val: number) => {
+        setAmount(val.toString());
+    };
+
+    const handleSelectMax = () => {
+        setAmount(currentBalance.toString());
+    };
 
     const handleCreateStaking = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!amount || parseDecimal(amount) <= 0) {
-            showToast('Please enter a valid amount', 'error');
+        const numVal = parseDecimal(amount);
+        if (!amount || numVal <= 0) {
+            showToast('Please enter a valid staking amount', 'error');
+            return;
+        }
+
+        if (numVal > currentBalance) {
+            showToast('Insufficient USDT staking balance', 'error');
             return;
         }
 
@@ -47,13 +61,14 @@ export default function UsdtStakingPage() {
         try {
             await dispatch(
                 createStaking({
-                    amount: parseDecimal(amount),
+                    amount: numVal,
                 })
             ).unwrap();
 
-            showToast('Staking created successfully!', 'success');
+            showToast('USDT Staking contract initialized successfully!', 'success');
             setAmount('');
             dispatch(fetchStakings());
+            dispatch(fetchBalance());
         } catch (err: any) {
             const msg = err?.message || 'Failed to create staking';
             showToast(msg, 'error');
@@ -63,155 +78,170 @@ export default function UsdtStakingPage() {
     };
 
     return (
-        <main className="container mx-auto px-4 py-6">
-            <h1 className="text-3xl font-bold mb-8">USDT Staking</h1>
+        <div className="space-y-6 pb-8">
+            {/* Header Title Banner */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-bold text-[#F4F2FB] tracking-tight">USDT Staking Pool</h1>
+                    <p className="text-xs text-[#8B85A3]">Stake USDT to earn daily rewards up to 2x target</p>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl border border-[#22C55E]/30 bg-[#12261A] px-3 py-1.5 text-xs font-semibold text-[#22C55E]">
+                    <FaBolt className="h-3 w-3 text-[#22C55E]" />
+                    <span>0.18% Daily Yield</span>
+                </div>
+            </div>
 
             {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <div className="rounded-2xl border border-[#E24B4A]/30 bg-[#E24B4A]/10 p-4 text-xs font-medium text-[#E24B4A]">
                     {error}
                 </div>
             )}
 
-            {/* Balance Summary */}
-            {balance && (
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 mb-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <p className="text-sm text-blue-100">Staking Balance</p>
-                            <p className="text-2xl font-bold">${balance.balance}</p>
-                        </div>
-                    </div>
+            {/* Staking Form Card */}
+            <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-5 shadow-xl space-y-5">
+                <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[#F4F2FB]">Stake Amount</span>
+                    <span className="text-xs text-[#8B85A3]">
+                        Available: <strong className="text-[#A78BFA]">${currentBalance.toFixed(2)} USDT</strong>
+                    </span>
                 </div>
-            )}
 
-            {/* Create Staking Form */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-                <h2 className="text-2xl font-bold mb-6">Create New Staking</h2>
+                {/* Amount Input Box */}
+                <div className="relative">
+                    <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="0.00"
+                        className="w-full rounded-2xl border border-[#221E2F] bg-[#1A1626] py-3.5 pl-4 pr-16 text-lg font-bold text-[#F4F2FB] placeholder-[#6F6A83] focus:border-[#7C5CF0] focus:outline-none"
+                        disabled={isCreating}
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#A78BFA]">
+                        USDT
+                    </span>
+                </div>
 
-                <div className="grid md:grid-cols-3 gap-6 mb-6">
-                    <div>
-                        <label
-                            htmlFor="amount"
-                            className="block text-sm font-medium text-gray-700 mb-2"
+                {/* Quick Selection Chips */}
+                <div className="grid grid-cols-5 gap-2">
+                    {[50, 100, 500, 1000].map((val) => (
+                        <button
+                            key={val}
+                            type="button"
+                            onClick={() => handleQuickSelect(val)}
+                            className="rounded-xl border border-[#221E2F] bg-[#1A1626] py-2 text-xs font-semibold text-[#8B85A3] transition hover:border-[#7C5CF0] hover:text-[#F4F2FB]"
                         >
-                            Amount (USDT)
-                        </label>
-                        <input
-                            type="number"
-                            id="amount"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="Enter amount"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            disabled={isCreating}
-                        />
+                            ${val}
+                        </button>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={handleSelectMax}
+                        className="rounded-xl border border-[#7C5CF0]/40 bg-[#7C5CF0]/15 py-2 text-xs font-semibold text-[#A78BFA] transition hover:bg-[#7C5CF0]/25"
+                    >
+                        MAX
+                    </button>
+                </div>
+
+                {/* Terms & Target Summary Box */}
+                <div className="rounded-2xl border border-[#221E2F] bg-[#1A1626] p-4 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#8B85A3]">Daily Reward Rate</span>
+                        <span className="font-semibold text-[#22C55E]">0.18% Daily</span>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Estimated APY
-                        </label>
-                        <div className="px-4 py-2 bg-gray-100 rounded-lg text-gray-700 font-semibold">
-                            12.5% - 18%
-                        </div>
+                    <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#8B85A3]">Return Target</span>
+                        <span className="font-semibold text-[#A78BFA]">2x Principal Target</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#8B85A3]">Yield Distribution</span>
+                        <span className="font-medium text-[#F4F2FB]">Every 24 Hours</span>
                     </div>
                 </div>
 
+                {/* Submit Action Button */}
                 <button
                     onClick={handleCreateStaking}
-                    disabled={isCreating || loading}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    disabled={isCreating || loading || !amount}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#7C5CF0] py-4 text-sm font-semibold text-[#F4F2FB] shadow-lg shadow-[#7C5CF0]/30 transition hover:bg-[#6A49E0] active:scale-[0.99] disabled:opacity-50"
                 >
-                    {isCreating ? 'Creating...' : 'Create Staking'}
+                    <FaCoins className="h-4 w-4" />
+                    <span>{isCreating ? 'Initializing Staking...' : 'Confirm & Stake USDT'}</span>
                 </button>
             </div>
 
-            {/* Active Stakings */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-2xl font-bold mb-6">Your Stakings</h2>
+            {/* Active Stakings Section */}
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-[#F4F2FB]">Your Active Stakings</h3>
+                    <span className="text-xs text-[#8B85A3]">{stakings.length} Pool(s)</span>
+                </div>
 
                 {loading ? (
-                    <div className="text-center py-8 text-gray-500">Loading...</div>
+                    <div className="rounded-2xl border border-[#221E2F] bg-[#14111D] p-8 text-center text-xs text-[#8B85A3]">
+                        Loading active stakings...
+                    </div>
                 ) : stakings.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                        No active stakings yet
+                    <div className="rounded-2xl border border-[#221E2F] bg-[#14111D] p-8 text-center space-y-2">
+                        <FaLayerGroup className="mx-auto h-8 w-8 text-[#6F6A83]" />
+                        <p className="text-sm font-medium text-[#F4F2FB]">No active stakings</p>
+                        <p className="text-xs text-[#8B85A3]">Enter an amount above to begin earning daily rewards.</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-100">
-                                <tr>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Amount
-                                    </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Profit %
-                                    </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Max Return
-                                    </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Total Earned
-                                    </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Completion %
-                                    </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Status
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {stakings.length > 0 && stakings.map((staking) => (
-                                    <tr key={staking.id} className="border-t hover:bg-gray-50">
-                                        <td className="px-4 py-3 font-semibold">
-                                            ${staking.amount.toFixed(2)}
-                                        </td>
-                                        <td className="px-4 py-3">{staking.profit_percentage}%</td>
-                                        <td className="px-4 py-3">${staking.max_return.toFixed(2)}</td>
-                                        <td className="px-4 py-3">${staking.profit_earned.toFixed(2)}</td>
-                                        <td className="px-4 py-3">{staking.completion_percentage}%</td>
-                                        <td className="px-4 py-3">
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${staking.state === 'active'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : staking.state === 'completed'
-                                                        ? 'bg-blue-100 text-blue-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                                    }`}
-                                            >
-                                                {staking.state.charAt(0).toUpperCase() +
-                                                    staking.state.slice(1)}
+                    <div className="space-y-3">
+                        {stakings.map((staking) => {
+                            const completion = Number(staking.completion_percentage ?? 0);
+                            return (
+                                <div
+                                    key={staking.id}
+                                    className="rounded-2xl border border-[#221E2F] bg-[#14111D] p-4 space-y-3"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#7C5CF0]/15 text-[#A78BFA]">
+                                                <FaCoins className="h-4 w-4" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-[#F4F2FB]">
+                                                    ${Number(staking.amount).toFixed(2)} USDT
+                                                </p>
+                                                <p className="text-[11px] text-[#8B85A3]">
+                                                    Max Return: ${Number(staking.max_return).toFixed(2)}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <span
+                                            className={`rounded-xl px-2.5 py-1 text-[11px] font-semibold uppercase ${
+                                                staking.state === 'active'
+                                                    ? 'bg-[#12261A] text-[#22C55E] border border-[#22C55E]/30'
+                                                    : 'bg-[#1A1626] text-[#8B85A3] border border-[#221E2F]'
+                                            }`}
+                                        >
+                                            {staking.state}
+                                        </span>
+                                    </div>
+
+                                    {/* Progress Bar */}
+                                    <div className="space-y-1">
+                                        <div className="flex items-center justify-between text-[11px]">
+                                            <span className="text-[#8B85A3]">Target Progress</span>
+                                            <span className="font-semibold text-[#22C55E]">
+                                                ${Number(staking.profit_earned).toFixed(2)} / ${Number(staking.max_return).toFixed(2)} ({completion}%)
                                             </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                        </div>
+                                        <div className="h-2 w-full overflow-hidden rounded-full bg-[#1A1626]">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-[#7C5CF0] to-[#22C55E] transition-all duration-500"
+                                                style={{ width: `${Math.min(100, Math.max(0, completion))}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
-
-            {/* Quick Links */}
-            <div className="grid md:grid-cols-3 gap-4 mt-8">
-                <button
-                    onClick={() => router.push('/user/usdt-staking/balance')}
-                    className="bg-white border-2 border-blue-500 text-blue-600 py-4 rounded-lg font-semibold hover:bg-blue-50 transition"
-                >
-                    Manage Balance
-                </button>
-                <button
-                    onClick={() => router.push('/user/usdt-staking/withdraw-requests')}
-                    className="bg-white border-2 border-green-500 text-green-600 py-4 rounded-lg font-semibold hover:bg-green-50 transition"
-                >
-                    Withdraw Requests
-                </button>
-                <button
-                    onClick={() => router.push('/user/usdt-staking/transactions')}
-                    className="bg-white border-2 border-purple-500 text-purple-600 py-4 rounded-lg font-semibold hover:bg-purple-50 transition"
-                >
-                    View Transactions
-                </button>
-            </div>
-        </main>
+        </div>
     );
 }

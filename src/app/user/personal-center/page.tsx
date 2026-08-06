@@ -6,6 +6,18 @@ import { useAppDispatch } from '@/store/hooks';
 import { fetchProfile } from '@/store/authSlice';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+    FaUser,
+    FaCoins,
+    FaArrowDown,
+    FaArrowUp,
+    FaUsers,
+    FaChevronRight,
+    FaKey,
+    FaHeadset,
+    FaInfoCircle,
+    FaSignOutAlt
+} from 'react-icons/fa';
 
 export default function PersonalCenterPage() {
     const dispatch = useAppDispatch();
@@ -15,130 +27,127 @@ export default function PersonalCenterPage() {
         dispatch(fetchProfile());
     }, [dispatch]);
 
-    const menuItems = [
+    const user = profile?.user;
+
+    const getInitials = () => {
+        const f = user?.first_name ? user.first_name[0].toUpperCase() : '';
+        const l = user?.last_name ? user.last_name[0].toUpperCase() : '';
+        const combined = `${f}${l}`;
+        return combined || 'SP';
+    };
+
+    const fullName = user
+        ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Valued Member'
+        : 'Member Profile';
+
+    const menuSections = [
         {
-            title: 'Account',
+            title: 'Account Settings',
             items: [
-                { icon: '👤', label: 'Profile Settings', href: '/user/profile' },
-                { icon: '💰', label: 'Staking', href: '/user/usdt-staking' },
-                { icon: '📊', label: 'Transactions', href: '/user/transactions' },
+                { icon: FaUser, label: 'Profile Center', href: '/user/profile' },
+                { icon: FaKey, label: 'Change Password', href: '/user/change-password' },
+                { icon: FaCoins, label: 'USDT Staking', href: '/user/usdt-staking' },
             ]
         },
         {
-            title: 'Financial',
+            title: 'Financial & Wallet',
             items: [
-                { icon: '💵', label: 'Deposit', href: '/user/deposit' },
-                { icon: '💸', label: 'Withdraw', href: '/user/withdraw' },
-                { icon: '📜', label: 'Withdraw History', href: '/user/withdraw-history' },
+                { icon: FaArrowDown, label: 'Deposit USDT', href: '/user/deposit' },
+                { icon: FaArrowUp, label: 'Withdrawal Request', href: '/user/withdraw' },
             ]
         },
         {
-            title: 'Team',
+            title: 'Community & Help',
             items: [
-                { icon: '👥', label: 'Team Levels', href: '/user/team' },
-                // { icon: '🏆', label: 'My Rank', href: '/user/ranks' },
+                { icon: FaUsers, label: 'Referral Team', href: '/user/team' },
+                { icon: FaHeadset, label: 'Support & Tickets', href: '/user/support' },
+                { icon: FaInfoCircle, label: 'About StakePro', href: '/user/about-us' },
             ]
         }
     ];
 
     return (
-        <main className="flex min-h-screen w-full max-w-4xl flex-col items-center py-10 px-4">
-            <div className="w-full space-y-6">
-                {/* Profile Header */}
-                <div className="card-premium rounded-lg shadow-lg p-6">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="relative w-20 h-20">
+        <div className="space-y-6 pb-8">
+            {/* Profile Summary Card */}
+            <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-5 shadow-xl space-y-4">
+                <div className="flex items-center gap-4">
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#7C5CF0] bg-[#1C1826] text-xl font-bold text-[#B9A4F7] shadow-lg shadow-[#7C5CF0]/20 overflow-hidden flex-shrink-0">
+                        {user?.image_url ? (
                             <Image
-                                src={profile?.user?.image_url || 'https://placehold.co/600x400'}
-                                alt="Profile"
+                                src={user.image_url}
+                                alt="Avatar"
                                 fill
-                                className="rounded-full object-cover border-4 border-pm-gold-900"
+                                className="object-cover"
                                 unoptimized
                             />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-bold text-pm-gold-500">
-                                {profile?.user?.first_name || profile?.user?.name || 'User'} {profile?.user?.last_name || ''}
-                            </h1>
-                            <p className="text-pm-muted">{profile?.user?.email}</p>
-                        </div>
+                        ) : (
+                            <span>{getInitials()}</span>
+                        )}
                     </div>
-
-                    {/* Quick Stats */}
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="text-center p-3 bg-pm-brown-900/50 rounded-lg border border-pm-gold-900/30">
-                            <p className="text-sm text-pm-muted">Balance</p>
-                            <p className="text-sm font-bold text-pm-gold-500">
-                                ${Number(profile?.user?.balance ?? 0).toFixed(2)}
-                            </p>
-                        </div>
-                        <div className="text-center p-3 bg-pm-brown-900/50 rounded-lg border border-pm-gold-900/30">
-                            <p className="text-sm text-pm-muted">Total Profits</p>
-                            <p className="text-sm font-bold text-pm-gold-500">
-                                ${Number(profile?.stats?.total_profits ?? 0).toFixed(2)}
-                            </p>
-                        </div>
-                        <div className="text-center p-3 bg-pm-brown-900/50 rounded-lg border border-pm-gold-900/30">
-                            <p className="text-sm text-pm-muted">Active</p>
-                            <p className="text-sm font-bold text-pm-gold-500">
-                                ${Number(profile?.stats?.active_investment ?? 0).toFixed(2)}
-                            </p>
-                        </div>
+                    <div>
+                        <h1 className="text-lg font-bold text-[#F4F2FB] tracking-tight">{fullName}</h1>
+                        <p className="text-xs font-mono text-[#8B85A3]">{user?.email}</p>
                     </div>
                 </div>
 
-                {/* Menu Sections */}
-                {menuItems.map((section, idx) => (
-                    <div key={idx} className="card-premium rounded-lg shadow-lg p-6">
-                        <h2 className="text-xl font-bold mb-4 text-pm-gold-500">{section.title}</h2>
-                        <div className="space-y-2">
-                            {section.items.map((item, itemIdx) => (
+                {/* Quick Balance Pills */}
+                <div className="grid grid-cols-3 gap-2.5 pt-2">
+                    <div className="rounded-xl border border-[#221E2F] bg-[#1A1626] p-3 text-center">
+                        <p className="text-[11px] text-[#8B85A3]">Balance</p>
+                        <p className="mt-1 text-sm font-semibold text-[#F4F2FB]">
+                            ${Number(user?.balance ?? 0).toFixed(2)}
+                        </p>
+                    </div>
+                    <div className="rounded-xl border border-[#221E2F] bg-[#1A1626] p-3 text-center">
+                        <p className="text-[11px] text-[#8B85A3]">Total Profits</p>
+                        <p className="mt-1 text-sm font-semibold text-[#22C55E]">
+                            +${Number(profile?.stats?.total_profits ?? 0).toFixed(2)}
+                        </p>
+                    </div>
+                    <div className="rounded-xl border border-[#221E2F] bg-[#1A1626] p-3 text-center">
+                        <p className="text-[11px] text-[#8B85A3]">Active Stake</p>
+                        <p className="mt-1 text-sm font-semibold text-[#A78BFA]">
+                            ${Number(profile?.stats?.active_staking ?? profile?.stats?.active_investment ?? 0).toFixed(2)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Menu Links */}
+            {menuSections.map((section, idx) => (
+                <div key={idx} className="space-y-2.5">
+                    <h3 className="text-xs font-semibold text-[#8B85A3] px-1">{section.title}</h3>
+                    <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-2 space-y-1">
+                        {section.items.map((item, itemIdx) => {
+                            const Icon = item.icon;
+                            return (
                                 <Link
                                     key={itemIdx}
                                     href={item.href}
-                                    className="flex items-center justify-between p-4 bg-pm-brown-900/30 rounded-lg border border-pm-gold-900/20 hover:border-pm-gold-500 transition"
+                                    className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-[#F4F2FB] transition hover:bg-[#1A1626]"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">{item.icon}</span>
-                                        <span className="text-pm-gold-500">{item.label}</span>
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#7C5CF0]/15 text-[#A78BFA]">
+                                            <Icon className="h-4 w-4" />
+                                        </div>
+                                        <span>{item.label}</span>
                                     </div>
-                                    <svg
-                                        className="w-5 h-5 text-pm-gold-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 5l7 7-7 7"
-                                        />
-                                    </svg>
+                                    <FaChevronRight className="h-3 w-3 text-[#6F6A83]" />
                                 </Link>
-                            ))}
-                        </div>
+                            );
+                        })}
                     </div>
-                ))}
-
-                {/* Logout Button */}
-                <div className="card-premium rounded-lg shadow-lg p-6">
-                    <Link
-                        href="/logout"
-                        className="flex items-center justify-center gap-3 p-4 bg-red-900/20 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-900/30 transition"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                            />
-                        </svg>
-                        <span className="font-semibold">Log Out</span>
-                    </Link>
                 </div>
-            </div>
-        </main>
+            ))}
+
+            {/* Logout Action */}
+            <Link
+                href="/logout"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-[#E24B4A]/30 bg-[#E24B4A]/10 py-4 text-sm font-semibold text-[#E24B4A] transition hover:bg-[#E24B4A]/20 active:scale-[0.99]"
+            >
+                <FaSignOutAlt className="h-4 w-4" />
+                <span>Log Out</span>
+            </Link>
+        </div>
     );
 }

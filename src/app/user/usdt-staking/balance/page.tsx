@@ -4,12 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useToast } from '@/components/ToastProvider';
-import {
-    fetchBalance,
-    topupBalance,
-    withdrawBalance,
-} from '@/store/usdtStakingSlice';
+import { fetchBalance, topupBalance } from '@/store/usdtStakingSlice';
+import { fetchProfile } from '@/store/authSlice';
 import { parseDecimal } from '@/utils/validators';
+import { FaWallet, FaArrowLeft, FaPlusCircle } from 'react-icons/fa';
 
 export default function BalancePage() {
     const router = useRouter();
@@ -17,29 +15,33 @@ export default function BalancePage() {
     const { showToast } = useToast();
 
     const { balance, loading } = useAppSelector((s) => s.usdtStaking);
+    const { profile } = useAppSelector((s) => s.auth);
     const [topupAmount, setTopupAmount] = useState('');
-    const [withdrawAmount, setWithdrawAmount] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [activeTab, setActiveTab] = useState<'topup' | 'withdraw'>('topup');
 
     useEffect(() => {
         dispatch(fetchBalance());
+        dispatch(fetchProfile());
     }, [dispatch]);
+
+    const currentBalance = Number(balance?.balance ?? profile?.user?.balance ?? 0);
 
     const handleTopup = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!topupAmount || parseDecimal(topupAmount) <= 0) {
+        const numVal = parseDecimal(topupAmount);
+        if (!topupAmount || numVal <= 0) {
             showToast('Please enter a valid amount', 'error');
             return;
         }
 
         setIsSubmitting(true);
         try {
-            await dispatch(topupBalance({ amount: parseDecimal(topupAmount) })).unwrap();
+            await dispatch(topupBalance({ amount: numVal })).unwrap();
             showToast('Balance topped up successfully!', 'success');
             setTopupAmount('');
             dispatch(fetchBalance());
+            dispatch(fetchProfile());
         } catch (err: any) {
             const msg = err?.message || 'Failed to topup balance';
             showToast(msg, 'error');
@@ -48,172 +50,59 @@ export default function BalancePage() {
         }
     };
 
-    const handleWithdraw = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!withdrawAmount || parseDecimal(withdrawAmount) <= 0) {
-            showToast('Please enter a valid amount', 'error');
-            return;
-        }
-
-        if (balance && parseDecimal(withdrawAmount) > balance.available_for_withdrawal) {
-            showToast('Insufficient available balance', 'error');
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            await dispatch(withdrawBalance({ amount: parseDecimal(withdrawAmount) })).unwrap();
-            showToast('Withdrawal processed successfully!', 'success');
-            setWithdrawAmount('');
-            dispatch(fetchBalance());
-        } catch (err: any) {
-            const msg = err?.message || 'Failed to process withdrawal';
-            showToast(msg, 'error');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     return (
-        <main className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold">Manage Balance</h1>
+        <div className="space-y-6 pb-8">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-bold text-[#F4F2FB] tracking-tight">Manage Balance</h1>
+                    <p className="text-xs text-[#8B85A3]">View and top-up your USDT staking balance</p>
+                </div>
                 <button
                     onClick={() => router.back()}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="flex items-center gap-1.5 rounded-xl border border-[#221E2F] bg-[#14111D] px-3 py-1.5 text-xs font-semibold text-[#8B85A3] hover:text-[#F4F2FB]"
                 >
-                    ← Back
+                    <FaArrowLeft className="h-3 w-3" />
+                    <span>Back</span>
                 </button>
             </div>
 
-            {/* Balance Card */}
-            {balance && (
-                <div className="grid md:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6">
-                        <p className="text-sm text-blue-100 mb-2">Staking Balance</p>
-                        <p className="text-3xl font-bold">${balance.usdt_staking_balance.toFixed(2)}</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6">
-                        <p className="text-sm text-green-100 mb-2">Available</p>
-                        <p className="text-3xl font-bold">
-                            ${balance.available_for_withdrawal.toFixed(2)}
-                        </p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6">
-                        <p className="text-sm text-purple-100 mb-2">Active Staking</p>
-                        <p className="text-3xl font-bold">${balance.active_staking_amount.toFixed(2)}</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6">
-                        <p className="text-sm text-orange-100 mb-2">Main Balance</p>
-                        <p className="text-3xl font-bold">${balance.main_balance.toFixed(2)}</p>
-                    </div>
+            {/* Current Balance Display Card */}
+            <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-6 shadow-xl space-y-2">
+                <div className="flex items-center gap-2 text-[#A78BFA]">
+                    <FaWallet className="h-4 w-4" />
+                    <span className="text-xs text-[#8B85A3]">Total Available Balance</span>
                 </div>
-            )}
-
-            {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-lg">
-                <div className="flex border-b">
-                    {/* <button
-                        onClick={() => setActiveTab('topup')}
-                        className={`flex-1 py-4 text-center font-semibold transition ${activeTab === 'topup'
-                            ? 'border-b-2 border-blue-600 text-blue-600'
-                            : 'text-gray-600'
-                            }`}
-                    >
-                        Top-up Balance
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('withdraw')}
-                        className={`flex-1 py-4 text-center font-semibold transition ${activeTab === 'withdraw'
-                            ? 'border-b-2 border-blue-600 text-blue-600'
-                            : 'text-gray-600'
-                            }`}
-                    >
-                        Withdraw Balance
-                    </button> */}
-                </div>
-
-                <div className="p-8">
-                    {/* {activeTab === 'topup' ? ( */}
-                    <form onSubmit={handleTopup} className="max-w-md mx-auto">
-                        <h2 className="text-2xl font-bold mb-6">Top-up Your Balance</h2>
-
-                        <div className="mb-6">
-                            <label htmlFor="topup-amount" className="block text-sm font-medium text-gray-700 mb-2">
-                                Amount (USDT)
-                            </label>
-                            <input
-                                type="number"
-                                id="topup-amount"
-                                value={topupAmount}
-                                onChange={(e) => setTopupAmount(e.target.value)}
-                                placeholder="Enter amount"
-                                step="0.01"
-                                disabled={isSubmitting}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                            <p className="text-sm text-gray-600">
-                                <strong>Note:</strong> You'll be redirected to complete the payment with your wallet.
-                            </p>
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={isSubmitting || loading}
-                            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                        >
-                            {isSubmitting ? 'Processing...' : 'Continue'}
-                        </button>
-                    </form>
-                    {/* // ) : ( */}
-                    {/* //     <form onSubmit={handleWithdraw} className="max-w-md mx-auto">
-                    //         <h2 className="text-2xl font-bold mb-6">Withdraw Balance</h2>
-
-                    //         <div className="mb-6">
-                    //             <label htmlFor="withdraw-amount" className="block text-sm font-medium text-gray-700 mb-2">
-                    //                 Amount (USDT)
-                    //             </label>
-                    //             <input
-                    //                 type="number"
-                    //                 id="withdraw-amount"
-                    //                 value={withdrawAmount}
-                    //                 onChange={(e) => setWithdrawAmount(e.target.value)}
-                    //                 placeholder="Enter amount"
-                    //                 step="0.01"
-                    //                 disabled={isSubmitting}
-                    //                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    //             />
-                    //             {balance && (
-                    //                 <p className="text-xs text-gray-500 mt-2">
-                    //                     Max available: ${balance.available_for_withdrawal.toFixed(2)}
-                    //                 </p>
-                    //             )}
-                    //         </div>
-
-                    //         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                    //             <p className="text-sm text-gray-600">
-                    //                 <strong>Note:</strong> Withdrawals may take 24-48 hours to process.
-                    //             </p>
-                    //         </div>
-
-                    //         <button
-                    //             type="submit"
-                    //             disabled={isSubmitting || loading}
-                    //             className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                    //         >
-                    //             {isSubmitting ? 'Processing...' : 'Withdraw'}
-                    //         </button>
-                    //     </form>
-                    // )} */}
-                </div>
+                <p className="text-3xl font-bold text-[#F4F2FB]">${currentBalance.toFixed(2)} USDT</p>
             </div>
-        </main>
+
+            {/* Top-up Form Card */}
+            <div className="rounded-[20px] border border-[#221E2F] bg-[#14111D] p-5 shadow-xl space-y-4">
+                <h2 className="text-sm font-bold text-[#F4F2FB]">Top-up Balance</h2>
+
+                <form onSubmit={handleTopup} className="space-y-4">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-[#F4F2FB]">Amount (USDT)</label>
+                        <input
+                            type="number"
+                            value={topupAmount}
+                            onChange={(e) => setTopupAmount(e.target.value)}
+                            placeholder="Enter amount"
+                            step="0.01"
+                            disabled={isSubmitting}
+                            className="w-full rounded-2xl border border-[#221E2F] bg-[#1A1626] py-3.5 px-4 text-sm font-semibold text-[#F4F2FB] placeholder-[#6F6A83] focus:border-[#7C5CF0] focus:outline-none disabled:opacity-50"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting || loading || !topupAmount}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#7C5CF0] py-4 text-sm font-semibold text-[#F4F2FB] shadow-lg shadow-[#7C5CF0]/30 transition hover:bg-[#6A49E0] active:scale-[0.99] disabled:opacity-50"
+                    >
+                        <FaPlusCircle className="h-4 w-4" />
+                        <span>{isSubmitting ? 'Processing...' : 'Confirm Top-up'}</span>
+                    </button>
+                </form>
+            </div>
+        </div>
     );
 }
