@@ -11,10 +11,10 @@ const queryClient = new QueryClient()
 
 // Set up metadata
 const metadata = {
-    name: 'MoneyMartx',
-    description: 'MoneyMartx',
-    url: 'https://moneymartx.com',
-    icons: ['https://moneymartx.com/logo.jpeg']
+    name: 'stakepro',
+    description: 'stakepro',
+    url: 'https://stakepro.com',
+    icons: ['https://stakepro.com/logo.jpeg']
 }
 
 // Create the modal

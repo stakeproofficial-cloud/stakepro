@@ -13,10 +13,7 @@ export interface Staking {
 }
 
 export interface StakingBalance {
-    usdt_staking_balance: any;
-    main_balance: any;
-    active_staking_amount: any;
-    available_for_withdrawal: any;
+    balance: any
 }
 
 export interface WithdrawRequest {

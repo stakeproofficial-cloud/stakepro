@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://stakepro.org",
+  baseURL: "https://api.stakepro.org",
   //baseURL: "http://hyipbackend.test",
   withCredentials: false,
 });

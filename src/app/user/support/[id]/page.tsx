@@ -47,36 +47,34 @@ export default function UserTicketDetailPage() {
 
     const getStatusBadge = (status: string) => {
         const styles: Record<string, string> = {
-            open: "bg-green-100 text-green-800",
-            pending: "bg-yellow-100 text-yellow-800",
-            closed: "bg-red-100 text-red-800",
+            open: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20",
+            pending: "bg-amber-500/15 text-amber-300 border border-amber-500/20",
+            closed: "bg-rose-500/15 text-rose-300 border border-rose-500/20",
         };
-        return <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles[status] || "bg-gray-100 text-gray-800"}`}>{status.toUpperCase()}</span>;
+        return <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles[status] || "bg-slate-700 text-slate-200 border border-slate-700"}`}>{status.toUpperCase()}</span>;
     };
 
     const getPriorityBadge = (priority: string) => {
         const styles: Record<string, string> = {
-            low: "bg-blue-100 text-blue-800",
-            normal: "bg-gray-100 text-gray-800",
-            high: "bg-orange-100 text-orange-800",
-            urgent: "bg-red-100 text-red-800",
+            low: "bg-sky-500/15 text-sky-300 border border-sky-500/20",
+            normal: "bg-slate-700 text-slate-200 border border-slate-700",
+            high: "bg-orange-500/15 text-orange-300 border border-orange-500/20",
+            urgent: "bg-rose-500/15 text-rose-300 border border-rose-500/20",
         };
-        return <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles[priority] || "bg-gray-100 text-gray-800"}`}>{priority.toUpperCase()}</span>;
+        return <span className={`px-3 py-1 rounded-full text-xs font-medium ${styles[priority] || "bg-slate-700 text-slate-200 border border-slate-700"}`}>{priority.toUpperCase()}</span>;
     };
 
     if (loadingTicketId === ticketId) {
-        return <div className="p-6 text-center">Loading ticket...</div>;
+        return <div className="p-6 text-center text-slate-200">Loading ticket...</div>;
     }
 
     if (!ticket) {
         return (
-            <div className="p-6">
-                <div className="text-center">
-                    <p className="text-gray-500 mb-4">Ticket not found</p>
-                    <Link href="/user/support" className="text-blue-600 hover:text-blue-800">
-                        Back to Support
-                    </Link>
-                </div>
+            <div className="p-6 text-center text-slate-200">
+                <p className="text-slate-400 mb-4">Ticket not found</p>
+                <Link href="/user/support" className="text-cyan-400 hover:text-cyan-300">
+                    Back to Support
+                </Link>
             </div>
         );
     }
@@ -110,19 +108,19 @@ export default function UserTicketDetailPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-lg font-semibold mb-4">Conversation</h2>
+            <div className="rounded-[2rem] border border-white/10 bg-[#0d1624]/95 shadow-[0_24px_60px_rgba(0,0,0,0.35)] p-6 mb-6">
+                <h2 className="text-lg font-semibold mb-4 text-white">Conversation</h2>
                 <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
                     {messages.length === 0 ? (
-                        <div className="text-center text-gray-500 py-8">No messages yet</div>
+                        <div className="text-center text-slate-400 py-8">No messages yet</div>
                     ) : (
                         messages.map((msg: SupportMessage) => (
-                            <div key={msg.id} className={`p-4 rounded-lg ${msg.sender_role === "admin" ? "bg-blue-50 border border-blue-200" : "bg-gray-50 border border-gray-200"}`}>
-                                <div className="flex items-center justify-between mb-2">
+                            <div key={msg.id} className={`p-4 rounded-3xl ${msg.sender_role === "admin" ? "bg-slate-900/70 border border-cyan-500/10" : "bg-slate-900/60 border border-white/10"}`}>
+                                <div className="flex items-center justify-between mb-2 text-slate-200">
                                     <span className="font-medium">{msg.sender_role === "admin" ? "Support Staff" : "You"}</span>
-                                    <span className="text-xs text-gray-500">{new Date(msg.created_at).toLocaleString()}</span>
+                                    <span className="text-xs text-slate-400">{new Date(msg.created_at).toLocaleString()}</span>
                                 </div>
-                                <p className="text-gray-800 whitespace-pre-line">{msg.message}</p>
+                                <p className="whitespace-pre-line text-slate-200">{msg.message}</p>
                                 {msg.attachment_url && (
                                     <div className="mt-3">
                                         <a
@@ -134,7 +132,7 @@ export default function UserTicketDetailPage() {
                                             <img
                                                 src={msg.attachment_url}
                                                 alt="Attachment"
-                                                className="max-h-64 rounded border border-gray-200 object-contain"
+                                                className="max-h-64 rounded border border-white/10 object-contain"
                                             />
                                         </a>
                                     </div>
@@ -145,30 +143,30 @@ export default function UserTicketDetailPage() {
                 </div>
 
                 {ticket.status !== "closed" && (
-                    <form onSubmit={handleReply} className="space-y-3 pt-4 border-t">
+                    <form onSubmit={handleReply} className="space-y-3 pt-4 border-t border-white/10">
                         <textarea
                             value={replyText}
                             onChange={(e) => setReplyText(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+                            className="w-full rounded-3xl border border-white/10 bg-white/5 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 h-24"
                             placeholder="Type your reply..."
                             required
                         />
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Attach Image (optional)</label>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Attach Image (optional)</label>
                             <input
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) => setReplyImage(e.target.files?.[0] || null)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full rounded-3xl border border-white/10 bg-white/5 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                             />
                             {replyImage && (
-                                <p className="text-sm text-gray-600 mt-1">Selected: {replyImage.name}</p>
+                                <p className="text-sm text-slate-400 mt-1">Selected: {replyImage.name}</p>
                             )}
                         </div>
                         <button
                             type="submit"
                             disabled={replyingTicketId === ticketId}
-                            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:bg-gray-400"
+                            className="w-full rounded-3xl bg-cyan-500 py-2 text-slate-950 hover:bg-cyan-400 transition disabled:bg-slate-700"
                         >
                             {replyingTicketId === ticketId ? "Sending..." : "Send Reply"}
                         </button>

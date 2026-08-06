@@ -78,23 +78,7 @@ export default function UsdtStakingPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <p className="text-sm text-blue-100">Staking Balance</p>
-                            <p className="text-2xl font-bold">${balance.usdt_staking_balance.toFixed(2)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-blue-100">Available</p>
-                            <p className="text-2xl font-bold">
-                                ${balance.available_for_withdrawal.toFixed(2)}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-blue-100">Active Staking</p>
-                            <p className="text-2xl font-bold">
-                                ${balance.active_staking_amount.toFixed(2)}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-blue-100">Main Balance</p>
-                            <p className="text-2xl font-bold">${balance.main_balance.toFixed(2)}</p>
+                            <p className="text-2xl font-bold">${balance.balance}</p>
                         </div>
                     </div>
                 </div>

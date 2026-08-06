@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "MoneyMartx - USDT Staking Platform",
-    template: "%s | MoneyMartx",
+    default: "Stakepro - USDT Staking Platform",
+    template: "%s | stakepro",
   },
   description: "Secure USDT staking platform with balance tracking, staking rewards, and withdrawals.",
   keywords: [
@@ -28,39 +28,39 @@ export const metadata: Metadata = {
     "passive income",
     "daily rewards",
     "referral earnings",
-    "MoneyMartx",
+    "Stakepro",
   ],
-  authors: [{ name: "MoneyMartx Team" }],
-  creator: "MoneyMartx",
-  publisher: "MoneyMartx",
+  authors: [{ name: "Stakepro Team" }],
+  creator: "Stakepro",
+  publisher: "Stakepro",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://moneymartx.com'),
+  metadataBase: new URL('https://stakepro.org'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://moneymartx.com',
-    siteName: 'MoneyMartx',
-    title: 'MoneyMartx - USDT Staking Platform',
+    url: 'https://stakepro.org',
+    siteName: 'Stakepro',
+    title: 'Stakepro - USDT Staking Platform',
     description: 'Secure USDT staking platform with balance tracking, staking rewards, and withdrawals.',
     images: [
       {
         url: '/logo.png',
         width: 1200,
         height: 630,
-        alt: 'MoneyMartx Logo',
+        alt: 'Stakepro Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MoneyMartx - USDT Staking Platform',
+    title: 'Stakepro - USDT Staking Platform',
     description: 'Secure USDT staking platform with balance tracking, staking rewards, and withdrawals.',
     images: ['/logo.png'],
   },
