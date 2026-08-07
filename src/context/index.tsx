@@ -13,8 +13,8 @@ const queryClient = new QueryClient()
 const metadata = {
     name: 'stakepro',
     description: 'stakepro',
-    url: 'https://stakepro.com',
-    icons: ['https://stakepro.com/logo.jpeg']
+    url: 'https://stakepro.org',
+    icons: ['https://stakepro.org/logo.jpeg']
 }
 
 // Create the modal

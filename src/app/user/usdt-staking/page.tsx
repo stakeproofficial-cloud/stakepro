@@ -87,7 +87,7 @@ export default function UsdtStakingPage() {
                 </div>
                 <div className="flex items-center gap-1.5 rounded-xl border border-[#22C55E]/30 bg-[#12261A] px-3 py-1.5 text-xs font-semibold text-[#22C55E]">
                     <FaBolt className="h-3 w-3 text-[#22C55E]" />
-                    <span>0.18% Daily Yield</span>
+                    <span>0.19% to 0.30% Daily Yield</span>
                 </div>
             </div>
 
@@ -146,7 +146,7 @@ export default function UsdtStakingPage() {
                 <div className="rounded-2xl border border-[#221E2F] bg-[#1A1626] p-4 space-y-2.5">
                     <div className="flex items-center justify-between text-xs">
                         <span className="text-[#8B85A3]">Daily Reward Rate</span>
-                        <span className="font-semibold text-[#22C55E]">0.18% Daily</span>
+                        <span className="font-semibold text-[#22C55E]">0.19% to 0.30% Daily</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                         <span className="text-[#8B85A3]">Return Target</span>
@@ -211,11 +211,10 @@ export default function UsdtStakingPage() {
                                         </div>
 
                                         <span
-                                            className={`rounded-xl px-2.5 py-1 text-[11px] font-semibold uppercase ${
-                                                staking.state === 'active'
-                                                    ? 'bg-[#12261A] text-[#22C55E] border border-[#22C55E]/30'
-                                                    : 'bg-[#1A1626] text-[#8B85A3] border border-[#221E2F]'
-                                            }`}
+                                            className={`rounded-xl px-2.5 py-1 text-[11px] font-semibold uppercase ${staking.state === 'active'
+                                                ? 'bg-[#12261A] text-[#22C55E] border border-[#22C55E]/30'
+                                                : 'bg-[#1A1626] text-[#8B85A3] border border-[#221E2F]'
+                                                }`}
                                         >
                                             {staking.state}
                                         </span>
