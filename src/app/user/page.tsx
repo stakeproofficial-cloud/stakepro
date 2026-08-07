@@ -105,7 +105,7 @@ export default function Home() {
                         {/* Daily Profit Rate Badge */}
                         <div className="flex items-center gap-1.5 rounded-xl border border-[#22C55E]/30 bg-[#12261A] px-3 py-1.5 text-xs font-semibold text-[#22C55E]">
                             <FaBolt className="h-3 w-3 text-[#22C55E]" />
-                            <span>0.18% Daily Rate</span>
+                            <span>0.19% - 0.30 Daily Rate</span>
                         </div>
                     </div>
 
@@ -235,13 +235,6 @@ export default function Home() {
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-[#F4F2FB]">Referral Program</h3>
-                    <Link
-                        href="/user/team"
-                        className="flex items-center gap-1 text-xs font-medium text-[#A78BFA] transition hover:text-[#B9A4F7]"
-                    >
-                        <span>View details</span>
-                        <FaChevronRight className="h-3 w-3" />
-                    </Link>
                 </div>
 
                 <div className="rounded-2xl border border-[#221E2F] bg-[#14111D] p-4 space-y-4">

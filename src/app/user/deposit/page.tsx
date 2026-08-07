@@ -18,7 +18,7 @@ const ERC20_ABI = [
 ] as const;
 
 const USDT_ADDRESSES: Record<number, `0x${string}` | undefined> = {
-    56: '0x55d398326f99059fF775485246999027B3197955', // BSC mainnet
+    56: '0x55d398326f99059ff775485246999027b3197955', // BSC mainnet
 };
 
 export default function DepositPage() {
@@ -105,7 +105,12 @@ export default function DepositPage() {
 
             showToast('Transaction sent. Waiting for on-chain confirmation...', 'info');
 
-            await publicClient.waitForTransactionReceipt({ hash });
+            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+            if (receipt.status !== 'success') {
+                showToast('Transaction failed or reverted on blockchain. Balance was not updated.', 'error');
+                return;
+            }
 
             showToast('USDT transfer confirmed on-chain ✔', 'success');
 
