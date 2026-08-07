@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAppSelector } from '@/store/hooks';
-import { FaBell, FaBars } from 'react-icons/fa';
+import { FaWhatsapp, FaBars } from 'react-icons/fa';
 
 export default function Header({ toggleSidebar }: { toggleSidebar: () => void }) {
     const profile = useAppSelector((s) => s.auth.profile);
@@ -35,16 +35,17 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
                     <span className="text-base font-semibold text-[#F4F2FB] tracking-tight">Stake Pro</span>
                 </div>
 
-                {/* Right Actions: Notifications & Avatar */}
+                {/* Right Actions: WhatsApp & Avatar */}
                 <div className="flex items-center gap-3">
-                    <Link
-                        href="/user/support"
-                        className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#221E2F] bg-[#14111D] text-[#8B85A3] transition hover:text-[#F4F2FB] hover:bg-[#1A1626]"
-                        aria-label="Notifications"
+                    <a
+                        href="https://whatsapp.com/channel/0029Vb9HApl4Y9lkRQ1OlV26"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#25D366]/30 bg-[#25D366]/10 text-[#25D366] transition hover:bg-[#25D366]/20 hover:text-white"
+                        aria-label="WhatsApp Channel"
                     >
-                        <FaBell className="h-4 w-4" />
-                        <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[#E24B4A] ring-2 ring-[#0A0A0F]" />
-                    </Link>
+                        <FaWhatsapp className="h-4 w-4" />
+                    </a>
 
                     <Link
                         href="/user/personal-center"

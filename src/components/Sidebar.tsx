@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     FaHome,
+    FaUser,
     FaCoins,
     FaArrowDown,
     FaArrowUp,
@@ -19,10 +20,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
 
     const menuItems = [
         { href: '/user', label: 'Dashboard', icon: FaHome },
+        { href: '/user/profile', label: 'My Profile', icon: FaUser },
         { href: '/user/usdt-staking', label: 'USDT Staking', icon: FaCoins },
         { href: '/user/deposit', label: 'Deposit', icon: FaArrowDown },
         { href: '/user/withdraw', label: 'Withdrawal', icon: FaArrowUp },
-        { href: '/user/team', label: 'Referral Team', icon: FaUserCheck },
         { href: '/user/change-password', label: 'Change Password', icon: FaKey },
         { href: '/user/support', label: 'Support & Tickets', icon: FaHeadset },
         { href: '/user/about-us', label: 'About StakePro', icon: FaInfoCircle },
@@ -38,9 +39,8 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
             )}
 
             <aside
-                className={`fixed top-0 left-0 z-50 h-full w-72 transform border-r border-[#221E2F] bg-[#14111D] shadow-2xl shadow-black/80 transition-transform duration-300 ease-in-out ${
-                    isOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
+                className={`fixed top-0 left-0 z-50 h-full w-72 transform border-r border-[#221E2F] bg-[#14111D] shadow-2xl shadow-black/80 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
             >
                 <div className="flex h-16 items-center justify-between px-5 border-b border-[#221E2F] bg-[#1A1626]/50">
                     <div>
@@ -66,11 +66,10 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                                     <Link
                                         href={item.href}
                                         onClick={onClose}
-                                        className={`flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
-                                            isActive
-                                                ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30 font-semibold'
-                                                : 'text-[#8B85A3] hover:bg-[#1A1626] hover:text-[#F4F2FB]'
-                                        }`}
+                                        className={`flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${isActive
+                                            ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30 font-semibold'
+                                            : 'text-[#8B85A3] hover:bg-[#1A1626] hover:text-[#F4F2FB]'
+                                            }`}
                                     >
                                         <Icon className={`h-4 w-4 ${isActive ? 'text-[#F4F2FB]' : 'text-[#A78BFA]'}`} />
                                         <span>{item.label}</span>
