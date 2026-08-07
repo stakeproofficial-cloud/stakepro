@@ -29,8 +29,8 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
 
                 {/* Center Brand Title */}
                 <div className="flex items-center gap-2">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#7C5CF0] to-[#A78BFA] shadow-md shadow-[#7C5CF0]/30">
-                        <Image src="/logo.png" alt="StakePro logo" width={20} height={20} unoptimized className="rounded-md" />
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#7C5CF0] to-[#A78BFA] shadow-md shadow-[#7C5CF0]/30">
+                        <Image src="/logo.png" alt="StakePro logo" width={60} height={60} unoptimized className="rounded-md" />
                     </span>
                     <span className="text-base font-semibold text-[#F4F2FB] tracking-tight">Stake Pro</span>
                 </div>
