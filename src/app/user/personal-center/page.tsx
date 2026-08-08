@@ -59,7 +59,6 @@ export default function PersonalCenterPage() {
         {
             title: 'Community & Help',
             items: [
-                { icon: FaUsers, label: 'Referral Team', href: '/user/team' },
                 { icon: FaHeadset, label: 'Support & Tickets', href: '/user/support' },
                 { icon: FaInfoCircle, label: 'About StakePro', href: '/user/about-us' },
             ]
