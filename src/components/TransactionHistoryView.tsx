@@ -99,7 +99,7 @@ export default function TransactionHistoryView({
         if (!Array.isArray(transactions)) return [];
         return transactions.filter((t: any) => {
             const type = (t.type || t.txn_type || '').toLowerCase();
-            return type === 'deposit' || type === 'topup';
+            return type === 'staking_deposit' || type === 'topup';
         });
     }, [transactions]);
 
@@ -209,7 +209,7 @@ export default function TransactionHistoryView({
     const getTypeBadge = (type: string) => {
         const t = type.toLowerCase();
         switch (t) {
-            case 'deposit':
+            case 'staking_deposit':
             case 'topup':
                 return {
                     label: 'Deposit',
@@ -218,7 +218,7 @@ export default function TransactionHistoryView({
                     sign: '+',
                 };
             case 'withdrawal':
-            case 'withdraw':
+            case 'withdraw_request':
                 return {
                     label: 'Withdrawal',
                     bgColor: 'bg-[#E24B4A]/15 border-[#E24B4A]/30 text-[#E24B4A]',
@@ -354,8 +354,8 @@ export default function TransactionHistoryView({
                 <button
                     onClick={() => setActiveTab('all')}
                     className={`flex-1 rounded-xl py-2.5 text-xs font-semibold transition-all ${activeTab === 'all'
-                            ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30'
-                            : 'text-[#8B85A3] hover:text-[#F4F2FB]'
+                        ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30'
+                        : 'text-[#8B85A3] hover:text-[#F4F2FB]'
                         }`}
                 >
                     All History ({stats.totalTxns})
@@ -363,8 +363,8 @@ export default function TransactionHistoryView({
                 <button
                     onClick={() => setActiveTab('deposits')}
                     className={`flex-1 rounded-xl py-2.5 text-xs font-semibold transition-all ${activeTab === 'deposits'
-                            ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30'
-                            : 'text-[#8B85A3] hover:text-[#F4F2FB]'
+                        ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30'
+                        : 'text-[#8B85A3] hover:text-[#F4F2FB]'
                         }`}
                 >
                     Deposits ({depositTransactions.length})
@@ -372,8 +372,8 @@ export default function TransactionHistoryView({
                 <button
                     onClick={() => setActiveTab('withdrawals')}
                     className={`flex-1 rounded-xl py-2.5 text-xs font-semibold transition-all ${activeTab === 'withdrawals'
-                            ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30'
-                            : 'text-[#8B85A3] hover:text-[#F4F2FB]'
+                        ? 'bg-[#7C5CF0] text-[#F4F2FB] shadow-md shadow-[#7C5CF0]/30'
+                        : 'text-[#8B85A3] hover:text-[#F4F2FB]'
                         }`}
                 >
                     Withdrawals ({combinedWithdrawRequests.length})
