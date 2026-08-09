@@ -204,9 +204,7 @@ export default function UsdtStakingPage() {
                                                 <p className="text-sm font-bold text-[#F4F2FB]">
                                                     ${Number(staking.amount).toFixed(2)} USDT
                                                 </p>
-                                                <p className="text-[11px] text-[#8B85A3]">
-                                                    Max Return: ${Number(staking.max_return).toFixed(2)}
-                                                </p>
+
                                             </div>
                                         </div>
 
