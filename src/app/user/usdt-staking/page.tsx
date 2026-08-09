@@ -150,7 +150,7 @@ export default function UsdtStakingPage() {
                     </div>
                     <div className="flex items-center justify-between text-xs">
                         <span className="text-[#8B85A3]">Return Target</span>
-                        <span className="font-semibold text-[#A78BFA]">2x Principal Target</span>
+                        <span className="font-semibold text-[#A78BFA]">2x to 3x Target</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                         <span className="text-[#8B85A3]">Yield Distribution</span>
@@ -220,21 +220,8 @@ export default function UsdtStakingPage() {
                                         </span>
                                     </div>
 
-                                    {/* Progress Bar */}
-                                    <div className="space-y-1">
-                                        <div className="flex items-center justify-between text-[11px]">
-                                            <span className="text-[#8B85A3]">Target Progress</span>
-                                            <span className="font-semibold text-[#22C55E]">
-                                                ${Number(staking.profit_earned).toFixed(2)} / ${Number(staking.max_return).toFixed(2)} ({completion}%)
-                                            </span>
-                                        </div>
-                                        <div className="h-2 w-full overflow-hidden rounded-full bg-[#1A1626]">
-                                            <div
-                                                className="h-full bg-gradient-to-r from-[#7C5CF0] to-[#22C55E] transition-all duration-500"
-                                                style={{ width: `${Math.min(100, Math.max(0, completion))}%` }}
-                                            />
-                                        </div>
-                                    </div>
+
+
                                 </div>
                             );
                         })}
