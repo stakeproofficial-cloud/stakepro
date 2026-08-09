@@ -69,7 +69,7 @@ export default function WithdrawPage() {
             setAmount('');
             setWalletAddress('');
             dispatch(fetchProfile());
-            router.push('/user/usdt_staking/withdraw-history');
+            router.push('/user/withdraw-history');
         } catch (err: any) {
             showToast(err?.message || 'Failed to submit withdrawal request', 'error');
         }
