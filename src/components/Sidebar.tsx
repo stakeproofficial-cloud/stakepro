@@ -12,7 +12,8 @@ import {
     FaInfoCircle,
     FaSignOutAlt,
     FaTimes,
-    FaUserCheck
+    FaUserCheck,
+    FaHistory
 } from 'react-icons/fa';
 
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -24,6 +25,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
         { href: '/user/usdt-staking', label: 'USDT Staking', icon: FaCoins },
         { href: '/user/deposit', label: 'Deposit', icon: FaArrowDown },
         { href: '/user/withdraw', label: 'Withdrawal', icon: FaArrowUp },
+        { href: '/user/history', label: 'History & Transactions', icon: FaHistory },
         { href: '/user/change-password', label: 'Change Password', icon: FaKey },
         { href: '/user/support', label: 'Support & Tickets', icon: FaHeadset },
         { href: '/user/about-us', label: 'About StakePro', icon: FaInfoCircle },

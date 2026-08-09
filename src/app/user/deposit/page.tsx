@@ -10,7 +10,8 @@ import { useToast } from '@/components/ToastProvider';
 import { ConnectButton } from '@/components/ConnectButton';
 import { useAccount, useChainId, usePublicClient, useWriteContract } from 'wagmi';
 import { parseUnits, type Hash } from 'viem';
-import { FaCopy, FaCheck, FaWallet, FaExclamationTriangle, FaArrowDown } from 'react-icons/fa';
+import Link from 'next/link';
+import { FaCopy, FaCheck, FaWallet, FaExclamationTriangle, FaArrowDown, FaHistory } from 'react-icons/fa';
 
 const ERC20_ABI = [
     { name: 'decimals', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'uint8' }] },
@@ -151,6 +152,13 @@ export default function DepositPage() {
                     <h1 className="text-xl font-bold text-[#F4F2FB] tracking-tight">Deposit USDT</h1>
                     <p className="text-xs text-[#8B85A3]">Add funds to your StakePro wallet (BEP20 on BSC)</p>
                 </div>
+                <Link
+                    href="/user/deposit-history"
+                    className="flex items-center gap-1.5 rounded-xl border border-[#221E2F] bg-[#1A1626] px-3 py-2 text-xs font-semibold text-[#A78BFA] transition hover:bg-[#7C5CF0]/20 hover:text-[#F4F2FB]"
+                >
+                    <FaHistory className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Deposit History</span>
+                </Link>
             </div>
 
             {/* Current Balance Overview */}

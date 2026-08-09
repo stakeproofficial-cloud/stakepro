@@ -20,7 +20,7 @@ export const fetchUserWithdraws = createAsyncThunk("withdraws/user", async () =>
 });
 
 export const reqUserWithdraws = createAsyncThunk("withdraws/user", async (payload: { wallet_address: string; amount: number, }, { rejectWithValue }) => {
-    const r = await api.post("/withdraw/user", payload);
+    const r = await api.post("usdt-staking/withdraw-request", payload);
     console.log(r.data)
     return r.data;
 });
