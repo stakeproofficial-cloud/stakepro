@@ -8,13 +8,13 @@ type WithdrawState = { adminList: WithdrawRequest[]; userList: WithdrawRequest[]
 const initialState: WithdrawState = { adminList: [], userList: [], loading: false, error: null };
 
 export const fetchAdminWithdraws = createAsyncThunk("withdraws/admin", async () => {
-    const r = await api.get("/withdraw/admin");
+    const r = await api.get("admin/usdt-staking/withdraw-requests");
     console.log(r.data);
     return r.data;
 });
 
 export const fetchUserWithdraws = createAsyncThunk("withdraws/user", async () => {
-    const r = await api.get("/withdraw/user");
+    const r = await api.get("usdt-staking/withdraw-requests");
     console.log(r.data);
     return r.data;
 });
@@ -29,7 +29,7 @@ export const updateWithdrawStatus = createAsyncThunk(
     "withdraws/updateStatus",
     async (payload: { id: number; action: string }, { rejectWithValue }) => {
         try {
-            const r = await api.post("/withdraw/admin", payload);
+            const r = await api.post("admin/usdt-staking/withdraw-requests", payload);
             return r.data;
         } catch (err: any) {
             return rejectWithValue(err?.response?.data || { message: err.message });
