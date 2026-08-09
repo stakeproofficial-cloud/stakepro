@@ -16,7 +16,8 @@ import {
     FaKey,
     FaHeadset,
     FaInfoCircle,
-    FaSignOutAlt
+    FaSignOutAlt,
+    FaHistory
 } from 'react-icons/fa';
 
 export default function PersonalCenterPage() {
@@ -54,6 +55,7 @@ export default function PersonalCenterPage() {
             items: [
                 { icon: FaArrowDown, label: 'Deposit USDT', href: '/user/deposit' },
                 { icon: FaArrowUp, label: 'Withdrawal Request', href: '/user/withdraw' },
+                { icon: FaHistory, label: 'Deposit & Withdraw History', href: '/user/history' },
             ]
         },
         {

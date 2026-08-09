@@ -28,6 +28,7 @@ export interface WithdrawRequest {
 }
 
 export interface StakingTransaction {
+    txn_type: string;
     id: any;
     user_id: any;
     type: 'deposit' | 'withdrawal' | 'reward' | 'topup' | 'withdraw_refund'

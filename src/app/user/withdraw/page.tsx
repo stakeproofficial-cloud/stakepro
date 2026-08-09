@@ -7,8 +7,9 @@ import { fetchProfile } from '@/store/authSlice';
 import { fetchUserPenalties } from '@/store/penaltySlice';
 import { reqUserWithdraws } from '@/store/withdrawRequestsSlice';
 import { useToast } from '@/components/ToastProvider';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaArrowUp, FaExclamationTriangle, FaBan } from 'react-icons/fa';
+import { FaArrowUp, FaExclamationTriangle, FaBan, FaHistory } from 'react-icons/fa';
 
 export default function WithdrawPage() {
     const dispatch = useAppDispatch();
@@ -68,7 +69,7 @@ export default function WithdrawPage() {
             setAmount('');
             setWalletAddress('');
             dispatch(fetchProfile());
-            router.push('/user/withdraw-history');
+            router.push('/user/usdt_staking/withdraw-history');
         } catch (err: any) {
             showToast(err?.message || 'Failed to submit withdrawal request', 'error');
         }
@@ -82,6 +83,13 @@ export default function WithdrawPage() {
                     <h1 className="text-xl font-bold text-[#F4F2FB] tracking-tight">Withdrawal Request</h1>
                     <p className="text-xs text-[#8B85A3]">Request USDT payout to your external wallet</p>
                 </div>
+                <Link
+                    href="/user/withdraw-history"
+                    className="flex items-center gap-1.5 rounded-xl border border-[#221E2F] bg-[#1A1626] px-3 py-2 text-xs font-semibold text-[#A78BFA] transition hover:bg-[#7C5CF0]/20 hover:text-[#F4F2FB]"
+                >
+                    <FaHistory className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Withdrawal History</span>
+                </Link>
             </div>
 
             {/* Penalty Alert */}
