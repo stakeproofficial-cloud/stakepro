@@ -27,7 +27,7 @@ export default function BottomBar() {
         { href: '/user/deposit', icon: FaWallet, label: 'Deposit' },
         { href: '/user/personal-center', icon: FaUser, label: 'Account' },
         { href: '/user/withdraw', icon: FaArrowUp, label: 'Withdraw' },
-        { href: '/user/team', icon: FaGift, label: 'Referral' },
+        { href: '/user/withdraw-history', icon: FaGift, label: 'Referral' },
     ];
 
     // Calculate polar coordinates for 6 radial chambers spaced 60° apart starting from top (-90°)
@@ -73,11 +73,10 @@ export default function BottomBar() {
                                     href={chamber.href}
                                     onClick={() => setIsOpen(false)}
                                     style={getChamberStyle(idx)}
-                                    className={`absolute flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-200 ${
-                                        isActive
+                                    className={`absolute flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-200 ${isActive
                                             ? 'border-[#A78BFA] bg-[#3A2F66] text-[#E3D9FF] shadow-lg shadow-[#7C5CF0]/40 scale-110'
                                             : 'border-[#322C42] bg-[#1C1826] text-[#A78BFA] hover:border-[#7C5CF0] hover:scale-105'
-                                    }`}
+                                        }`}
                                     title={chamber.label}
                                 >
                                     <Icon className="h-4 w-4" />
@@ -94,9 +93,8 @@ export default function BottomBar() {
                     {/* Home Tab */}
                     <Link
                         href="/user"
-                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                            pathname === '/user' ? 'text-[#A78BFA]' : 'text-[#6F6A83] hover:text-[#8B85A3]'
-                        }`}
+                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${pathname === '/user' ? 'text-[#A78BFA]' : 'text-[#6F6A83] hover:text-[#8B85A3]'
+                            }`}
                     >
                         <FaHome className="h-5 w-5" />
                         <span className="text-[10px] font-medium tracking-wide">Home</span>
@@ -105,9 +103,8 @@ export default function BottomBar() {
                     {/* Staking Tab */}
                     <Link
                         href="/user/usdt-staking"
-                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                            pathname === '/user/usdt-staking' ? 'text-[#A78BFA]' : 'text-[#6F6A83] hover:text-[#8B85A3]'
-                        }`}
+                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${pathname === '/user/usdt-staking' ? 'text-[#A78BFA]' : 'text-[#6F6A83] hover:text-[#8B85A3]'
+                            }`}
                     >
                         <FaCoins className="h-5 w-5" />
                         <span className="text-[10px] font-medium tracking-wide">Staking</span>
@@ -119,11 +116,10 @@ export default function BottomBar() {
                     {/* Wallet Tab */}
                     <Link
                         href="/user/deposit"
-                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                            pathname === '/user/deposit' || pathname === '/user/withdraw'
+                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${pathname === '/user/deposit' || pathname === '/user/withdraw'
                                 ? 'text-[#A78BFA]'
                                 : 'text-[#6F6A83] hover:text-[#8B85A3]'
-                        }`}
+                            }`}
                     >
                         <FaWallet className="h-5 w-5" />
                         <span className="text-[10px] font-medium tracking-wide">Wallet</span>
@@ -132,9 +128,8 @@ export default function BottomBar() {
                     {/* Account Tab */}
                     <Link
                         href="/user/personal-center"
-                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${
-                            pathname === '/user/personal-center' ? 'text-[#A78BFA]' : 'text-[#6F6A83] hover:text-[#8B85A3]'
-                        }`}
+                        className={`flex flex-col items-center justify-center gap-1 transition-colors ${pathname === '/user/personal-center' ? 'text-[#A78BFA]' : 'text-[#6F6A83] hover:text-[#8B85A3]'
+                            }`}
                     >
                         <FaUser className="h-5 w-5" />
                         <span className="text-[10px] font-medium tracking-wide">Account</span>
@@ -143,9 +138,8 @@ export default function BottomBar() {
                     {/* Center Trigger FAB */}
                     <button
                         onClick={toggleWheel}
-                        className={`absolute left-1/2 -top-5 flex h-[56px] w-[56px] -translate-x-1/2 items-center justify-center rounded-full border-[2.5px] border-[#0A0A10] bg-[#7C5CF0] text-[#F4F2FB] shadow-xl shadow-[#7C5CF0]/40 transition-transform duration-300 active:scale-95 ${
-                            isOpen ? 'rotate-180 bg-[#14111D]' : ''
-                        }`}
+                        className={`absolute left-1/2 -top-5 flex h-[56px] w-[56px] -translate-x-1/2 items-center justify-center rounded-full border-[2.5px] border-[#0A0A10] bg-[#7C5CF0] text-[#F4F2FB] shadow-xl shadow-[#7C5CF0]/40 transition-transform duration-300 active:scale-95 ${isOpen ? 'rotate-180 bg-[#14111D]' : ''
+                            }`}
                         aria-label="Toggle Navigation Wheel"
                     >
                         {isOpen ? (

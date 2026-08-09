@@ -54,7 +54,7 @@ export default function Home() {
     const activeStakingValue = Number(stats?.active_staking ?? stats?.active_investment ?? 0);
     const totalProfitsValue = Number(stats?.total_profits ?? 0);
     const referralEarningsValue = Number(stats?.referral_earnings ?? 0);
-
+    const refferrals = Number(stats?.total_referrals ?? 0);
     const referralCode = user?.referral_code || '';
     const referralLink = mounted
         ? `${window.location.origin}/register?ref=${referralCode}`
@@ -159,7 +159,7 @@ export default function Home() {
                                 <FaUsers className="h-3 w-3" />
                                 <span className="text-[11px] text-[#8B85A3]">Referrals</span>
                             </div>
-                            <p className="mt-1 text-sm font-semibold text-[#F4F2FB]">0 Users</p>
+                            <p className="mt-1 text-sm font-semibold text-[#F4F2FB]">${refferrals}</p>
                         </div>
                     </div>
                 </div>
