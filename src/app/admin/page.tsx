@@ -39,13 +39,6 @@ export default function AdminDashboard() {
             link: "/admin/balances"
         },
         {
-            title: "Pending Withdrawals",
-            value: pendingWithdrawals,
-            icon: "⏳",
-            color: "bg-yellow-500",
-            link: "/admin/withdraws"
-        },
-        {
             title: "USDT Staking Pending",
             value: 0,
             icon: "⏳",
