@@ -98,9 +98,7 @@ export const createTicket = createAsyncThunk(
                 formData.append('priority', priority);
                 formData.append('image', image);
 
-                const response = await api.post<{ message: string; ticket_id: number }>('support/tickets/store', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
+                const response = await api.post<{ message: string; ticket_id: number }>('support/tickets/store', formData);
                 return response.data;
             }
 
@@ -111,7 +109,7 @@ export const createTicket = createAsyncThunk(
             });
             return response.data;
         } catch (e: any) {
-            return rejectWithValue(e.message || 'Failed to create ticket');
+            return rejectWithValue(e?.response?.data?.error || e?.response?.data?.message || e.message || 'Failed to create ticket');
         }
     }
 );
@@ -128,9 +126,7 @@ export const replyToTicket = createAsyncThunk(
                 formData.append('message', message);
                 formData.append('image', image);
 
-                const response = await api.post<{ message: string }>('support/tickets/reply', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
+                const response = await api.post<{ message: string }>('support/tickets/reply', formData);
                 return { ticketId, ack: response.data.message };
             }
 
@@ -140,7 +136,7 @@ export const replyToTicket = createAsyncThunk(
             });
             return { ticketId, ack: response.data.message };
         } catch (e: any) {
-            return rejectWithValue(e.message || 'Failed to reply');
+            return rejectWithValue(e?.response?.data?.error || e?.response?.data?.message || e.message || 'Failed to reply');
         }
     }
 );

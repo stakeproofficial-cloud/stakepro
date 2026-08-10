@@ -60,62 +60,90 @@ export default function TransactionHistoryView({
         dispatch(fetchUserWithdraws());
     }, [dispatch]);
 
+    // Safely extract arrays from state regardless of wrapper objects
+    const rawWithdrawRequests = useMemo(() => {
+        if (Array.isArray(withdrawRequests)) return withdrawRequests;
+        if (withdrawRequests && Array.isArray((withdrawRequests as any).withdraw_requests)) return (withdrawRequests as any).withdraw_requests;
+        if (withdrawRequests && Array.isArray((withdrawRequests as any).data)) return (withdrawRequests as any).data;
+        return [];
+    }, [withdrawRequests]);
+
+    const rawWithdrawUserList = useMemo(() => {
+        if (Array.isArray(withdrawUserList)) return withdrawUserList;
+        if (withdrawUserList && Array.isArray((withdrawUserList as any).withdraw_requests)) return (withdrawUserList as any).withdraw_requests;
+        if (withdrawUserList && Array.isArray((withdrawUserList as any).data)) return (withdrawUserList as any).data;
+        return [];
+    }, [withdrawUserList]);
+
+    const rawTransactions = useMemo(() => {
+        if (Array.isArray(transactions)) return transactions;
+        if (transactions && Array.isArray((transactions as any).transactions)) return (transactions as any).transactions;
+        if (transactions && Array.isArray((transactions as any).data)) return (transactions as any).data;
+        return [];
+    }, [transactions]);
+
     // Combine withdrawal requests from both sources if available
     const combinedWithdrawRequests = useMemo(() => {
         const map = new Map<number | string, any>();
 
-        // Add from withdrawRequests (usdtStakingSlice)
-        if (Array.isArray(withdrawRequests)) {
-            withdrawRequests.forEach((req: any) => {
-                if (req && req.id) map.set(req.id, req);
-            });
-        }
+        rawWithdrawRequests.forEach((req: any) => {
+            if (req && req.id) {
+                map.set(req.id, {
+                    ...req,
+                    wallet_address: req.wallet_address_full || req.wallet_address || req.address,
+                    status: req.status || req.state || 'pending',
+                    created_at: req.created_at || req.requested_at,
+                });
+            }
+        });
 
-        // Add or merge from withdrawUserList (withdrawRequestsSlice)
-        if (Array.isArray(withdrawUserList)) {
-            withdrawUserList.forEach((req: any) => {
-                if (req && req.id) {
-                    const existing = map.get(req.id) || {};
-                    map.set(req.id, {
-                        ...existing,
-                        ...req,
-                        wallet_address: req.wallet_address || req.address || existing.wallet_address,
-                        status: req.status || req.state || existing.status || 'pending',
-                        created_at: req.created_at || req.requested_at || existing.created_at,
-                    });
-                }
-            });
-        }
+        rawWithdrawUserList.forEach((req: any) => {
+            if (req && req.id) {
+                const existing = map.get(req.id) || {};
+                map.set(req.id, {
+                    ...existing,
+                    ...req,
+                    wallet_address: req.wallet_address_full || req.wallet_address || req.address || existing.wallet_address,
+                    status: req.status || req.state || existing.status || 'pending',
+                    created_at: req.created_at || req.requested_at || existing.created_at,
+                });
+            }
+        });
 
         return Array.from(map.values()).sort((a, b) => {
             const timeA = new Date(a.created_at || a.requested_at || 0).getTime();
             const timeB = new Date(b.created_at || b.requested_at || 0).getTime();
             return timeB - timeA;
         });
-    }, [withdrawRequests, withdrawUserList]);
+    }, [rawWithdrawRequests, rawWithdrawUserList]);
 
     // Format deposit items
     const depositTransactions = useMemo(() => {
-        if (!Array.isArray(transactions)) return [];
-        return transactions.filter((t: any) => {
+        return rawTransactions.filter((t: any) => {
             const type = (t.type || t.txn_type || '').toLowerCase();
-            return type === 'staking_deposit' || type === 'topup';
+            return type === 'staking_deposit' || type === 'topup' || type === 'deposit';
         });
-    }, [transactions]);
+    }, [rawTransactions]);
 
     // Stats calculations
     const stats = useMemo(() => {
         const totalDeposited = depositTransactions.reduce(
-            (sum, item) => sum + Number(item.amount || 0),
+            (sum: number, item: { amount: any; }) => sum + Number(item.amount || 0),
             0
         );
 
         const totalWithdrawn = combinedWithdrawRequests
-            .filter((r) => r.status === 'completed' || r.status === 'approved' || r.state === 'approved')
+            .filter((r) => {
+                const st = (r.status || r.state || '').toLowerCase();
+                return st === 'completed' || st === 'approved';
+            })
             .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
         const pendingWithdrawals = combinedWithdrawRequests.filter(
-            (r) => r.status === 'pending' || r.state === 'pending'
+            (r) => {
+                const st = (r.status || r.state || 'pending').toLowerCase();
+                return st === 'pending';
+            }
         );
         const pendingAmount = pendingWithdrawals.reduce(
             (sum, item) => sum + Number(item.amount || 0),
@@ -127,16 +155,16 @@ export default function TransactionHistoryView({
             totalWithdrawn,
             pendingCount: pendingWithdrawals.length,
             pendingAmount,
-            totalTxns: (Array.isArray(transactions) ? transactions.length : 0) + combinedWithdrawRequests.length,
+            totalTxns: rawTransactions.length > 0 ? rawTransactions.length : combinedWithdrawRequests.length,
         };
-    }, [depositTransactions, combinedWithdrawRequests, transactions]);
+    }, [depositTransactions, combinedWithdrawRequests, rawTransactions]);
 
     // Filtered data list
     const filteredItems = useMemo(() => {
         let list: any[] = [];
 
         if (activeTab === 'deposits') {
-            list = depositTransactions.map((item) => ({
+            list = depositTransactions.map((item: { created_at: any; }) => ({
                 ...item,
                 itemType: 'deposit',
                 displayStatus: 'completed',
@@ -150,22 +178,63 @@ export default function TransactionHistoryView({
                 displayDate: item.created_at || item.requested_at,
             }));
         } else {
-            // All activity tab
-            const txnsFormatted = (Array.isArray(transactions) ? transactions : []).map((item: any) => ({
-                ...item,
-                itemType: (item.type || item.txn_type || 'transaction').toLowerCase(),
-                displayStatus: 'completed',
-                displayDate: item.created_at,
-            }));
+            // All activity tab with smart deduplication & status merging
+            const matchedWithdrawReqIds = new Set<number | string>();
 
-            const withdrawsFormatted = combinedWithdrawRequests.map((item) => ({
-                ...item,
-                itemType: 'withdrawal',
-                displayStatus: item.status || item.state || 'pending',
-                displayDate: item.created_at || item.requested_at,
-            }));
+            const txnsFormatted = rawTransactions.map((item: any) => {
+                const itemType = (item.type || item.txn_type || 'transaction').toLowerCase();
 
-            list = [...txnsFormatted, ...withdrawsFormatted];
+                if (itemType === 'withdraw_request' || itemType === 'withdrawal') {
+                    // Find corresponding withdrawal request in combinedWithdrawRequests
+                    const matchedReq = combinedWithdrawRequests.find((req) => {
+                        if (matchedWithdrawReqIds.has(req.id)) return false;
+                        const matchAmount = Math.abs(Number(req.amount) - Number(item.amount)) < 0.01;
+                        const matchDate = req.created_at && item.created_at
+                            ? Math.abs(new Date(req.created_at).getTime() - new Date(item.created_at).getTime()) < 60000
+                            : true;
+                        return matchAmount && matchDate;
+                    }) || combinedWithdrawRequests.find(req => !matchedWithdrawReqIds.has(req.id) && Math.abs(Number(req.amount) - Number(item.amount)) < 0.01);
+
+                    if (matchedReq) {
+                        matchedWithdrawReqIds.add(matchedReq.id);
+                        return {
+                            ...item,
+                            ...matchedReq,
+                            itemType: 'withdraw_request',
+                            displayStatus: matchedReq.status || matchedReq.state || 'pending',
+                            displayDate: item.created_at || matchedReq.created_at,
+                            wallet_address: matchedReq.wallet_address_full || matchedReq.wallet_address || item.wallet_address,
+                            wallet_address_full: matchedReq.wallet_address_full || matchedReq.wallet_address,
+                        };
+                    }
+
+                    return {
+                        ...item,
+                        itemType: 'withdraw_request',
+                        displayStatus: 'pending',
+                        displayDate: item.created_at,
+                    };
+                }
+
+                return {
+                    ...item,
+                    itemType: itemType,
+                    displayStatus: 'completed',
+                    displayDate: item.created_at,
+                };
+            });
+
+            // Add any withdrawal requests that were not represented in transactions array
+            const unmatchedWithdraws = combinedWithdrawRequests
+                .filter(req => !matchedWithdrawReqIds.has(req.id))
+                .map(req => ({
+                    ...req,
+                    itemType: 'withdraw_request',
+                    displayStatus: req.status || req.state || 'pending',
+                    displayDate: req.created_at || req.requested_at,
+                }));
+
+            list = [...txnsFormatted, ...unmatchedWithdraws];
         }
 
         // Sort by date descending
@@ -191,12 +260,13 @@ export default function TransactionHistoryView({
                 const ref = (item.reference || item.txn_number || item.id || '').toString().toLowerCase();
                 const addr = (item.wallet_address || item.wallet_address_full || '').toLowerCase();
                 const type = (item.itemType || '').toLowerCase();
-                return amt.includes(q) || ref.includes(q) || addr.includes(q) || type.includes(q);
+                const desc = (item.description || '').toLowerCase();
+                return amt.includes(q) || ref.includes(q) || addr.includes(q) || type.includes(q) || desc.includes(q);
             });
         }
 
         return list;
-    }, [activeTab, depositTransactions, combinedWithdrawRequests, transactions, statusFilter, searchQuery]);
+    }, [activeTab, depositTransactions, combinedWithdrawRequests, rawTransactions, statusFilter, searchQuery]);
 
     const handleCopy = (text: string, key: string) => {
         if (!text) return;
@@ -207,10 +277,11 @@ export default function TransactionHistoryView({
     };
 
     const getTypeBadge = (type: string) => {
-        const t = type.toLowerCase();
+        const t = (type || '').toLowerCase();
         switch (t) {
             case 'staking_deposit':
             case 'topup':
+            case 'deposit':
                 return {
                     label: 'Deposit',
                     bgColor: 'bg-[#22C55E]/15 border-[#22C55E]/30 text-[#22C55E]',
@@ -218,14 +289,24 @@ export default function TransactionHistoryView({
                     sign: '+',
                 };
             case 'withdraw_request':
-            case 'withdraw_request':
+            case 'withdrawal':
+            case 'withdraw':
                 return {
                     label: 'Withdrawal',
                     bgColor: 'bg-[#E24B4A]/15 border-[#E24B4A]/30 text-[#E24B4A]',
                     icon: FaArrowUp,
                     sign: '-',
                 };
+            case 'commission':
+            case 'referral_commission':
+                return {
+                    label: 'Commission',
+                    bgColor: 'bg-[#06B6D4]/15 border-[#06B6D4]/30 text-[#22D3EE]',
+                    icon: FaCoins,
+                    sign: '+',
+                };
             case 'reward':
+            case 'profit':
                 return {
                     label: 'Profit Earned',
                     bgColor: 'bg-[#EAB308]/15 border-[#EAB308]/30 text-[#EAB308]',
@@ -241,7 +322,7 @@ export default function TransactionHistoryView({
                 };
             default:
                 return {
-                    label: type.charAt(0).toUpperCase() + type.slice(1),
+                    label: type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Transaction',
                     bgColor: 'bg-[#221E2F] border-[#221E2F] text-[#8B85A3]',
                     icon: FaExchangeAlt,
                     sign: '',

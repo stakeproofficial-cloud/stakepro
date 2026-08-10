@@ -20,7 +20,10 @@ export default function AdminDashboard() {
 
     const totalBalance = users.reduce((sum, user) => sum + (Number(user.balance) || 0), 0);
     const pendingWithdrawals = Array.isArray(withdrawals)
-        ? withdrawals.filter(w => w.state === '0').length
+        ? withdrawals.filter(w => {
+            const st = (w.status || w.state || '').toString().toLowerCase();
+            return st === 'pending' || st === '0';
+        }).length
         : 0;
 
     const stats = [
@@ -40,10 +43,10 @@ export default function AdminDashboard() {
         },
         {
             title: "USDT Staking Pending",
-            value: 0,
+            value: pendingWithdrawals,
             icon: "⏳",
             color: "bg-yellow-500",
-            link: "/admin/usdt-staking"
+            link: "/admin/usdt-staking/withdrawals"
         },
         {
             title: "Total Transactions",

@@ -139,7 +139,7 @@ export const fetchAdminWithdrawals = createAsyncThunk(
 export const approveRejectWithdrawal = createAsyncThunk(
     'usdtStaking/approveRejectWithdrawal',
     async (
-        payload: { withdrawal_id: number; status: 'approved' | 'rejected'; reason?: string },
+        payload: { withdraw_id: number; action: 'approve' | 'reject'; reason?: string },
         { rejectWithValue }
     ) => {
         try {
@@ -288,7 +288,14 @@ const usdtStakingSlice = createSlice({
             })
             .addCase(fetchWithdrawRequests.fulfilled, (state, action) => {
                 state.loading = false;
-                state.withdrawRequests = action.payload;
+                const p = action.payload;
+                state.withdrawRequests = Array.isArray(p)
+                    ? p
+                    : Array.isArray(p?.withdraw_requests)
+                        ? p.withdraw_requests
+                        : Array.isArray(p?.data)
+                            ? p.data
+                            : [];
             })
             .addCase(fetchWithdrawRequests.rejected, (state, action: any) => {
                 state.loading = false;
@@ -342,7 +349,14 @@ const usdtStakingSlice = createSlice({
             })
             .addCase(fetchAdminWithdrawals.fulfilled, (state, action) => {
                 state.loading = false;
-                state.adminWithdrawals = action.payload.withdraw_requests;
+                const p = action.payload;
+                state.adminWithdrawals = Array.isArray(p)
+                    ? p
+                    : Array.isArray(p?.withdraw_requests)
+                        ? p.withdraw_requests
+                        : Array.isArray(p?.data)
+                            ? p.data
+                            : [];
             })
             .addCase(fetchAdminWithdrawals.rejected, (state, action: any) => {
                 state.loading = false;

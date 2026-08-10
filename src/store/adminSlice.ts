@@ -59,7 +59,7 @@ export const fetchUsersSummary = createAsyncThunk(
         try {
             const page = params?.page || 1;
             const size = params?.size || 25;
-            const r = await api.get(`?route=admin/users/summary&page=${page}&size=${size}`);
+            const r = await api.get(`admin/users/summary?page=${page}&size=${size}`);
             const payload = r.data || {};
             const users = Array.isArray(payload.users)
                 ? payload.users.map((user: any) => ({
@@ -93,7 +93,9 @@ export const searchUsers = createAsyncThunk(
         const r = await api.get(`admin/users?q=${encodeURIComponent(query)}`);
         return r.data;
     }
-); export const deleteUser = createAsyncThunk("admin/deleteUser", async (id: number) => {
+);
+
+export const deleteUser = createAsyncThunk("admin/deleteUser", async (id: number) => {
     await api.get(`admin/users/delete?id=${id}`);
     return id;
 });
@@ -101,7 +103,7 @@ export const searchUsers = createAsyncThunk(
 export const fetchReferralInvestments = createAsyncThunk(
     "admin/fetchReferralInvestments",
     async (userId: number) => {
-        const r = await api.get(`/referral_investments&user_id=${userId}`);
+        const r = await api.get(`admin/referral_investments?user_id=${userId}`);
         return r.data;
     }
 );

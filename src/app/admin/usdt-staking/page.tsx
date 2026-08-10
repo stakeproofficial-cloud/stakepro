@@ -136,12 +136,12 @@ export default function AdminUsdtStakingPage() {
             </div>
 
             {/* All Stakings */}
-            {/* <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-2xl font-bold mb-6">All Stakings</h2>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+                <h2 className="text-2xl font-bold mb-6">All Active & Completed Stakings</h2>
 
                 {loading ? (
                     <div className="text-center py-8 text-gray-500">Loading...</div>
-                ) : stakings.length === 0 ? (
+                ) : !Array.isArray(stakings) || stakings.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">No stakings found</div>
                 ) : (
                     <div className="overflow-x-auto">
@@ -153,9 +153,6 @@ export default function AdminUsdtStakingPage() {
                                     </th>
                                     <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Amount
-                                    </th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Profit %
                                     </th>
                                     <th className="px-4 py-3 text-left text-sm font-semibold">
                                         Max Return
@@ -176,12 +173,11 @@ export default function AdminUsdtStakingPage() {
                                     <tr key={staking.id} className="border-t hover:bg-gray-50">
                                         <td className="px-4 py-3">#{staking.user_id}</td>
                                         <td className="px-4 py-3 font-semibold">
-                                            ${staking.amount.toFixed(2)}
+                                            ${Number(staking.amount || 0).toFixed(2)} USDT
                                         </td>
-                                        <td className="px-4 py-3">{staking.profit_percentage}%</td>
-                                        <td className="px-4 py-3">${staking.max_return.toFixed(2)}</td>
-                                        <td className="px-4 py-3">${staking.profit_earned.toFixed(2)}</td>
-                                        <td className="px-4 py-3">{staking.completion_percentage}%</td>
+                                        <td className="px-4 py-3">${Number(staking.max_return || 0).toFixed(2)} USDT</td>
+                                        <td className="px-4 py-3 text-green-600 font-semibold">+${Number(staking.total_earned ?? staking.profit_earned ?? 0).toFixed(2)} USDT</td>
+                                        <td className="px-4 py-3">{Number(staking.completion_percentage || 0).toFixed(2)}%</td>
                                         <td className="px-4 py-3">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-semibold ${staking.state === 'active'
@@ -191,8 +187,7 @@ export default function AdminUsdtStakingPage() {
                                                         : 'bg-gray-100 text-gray-800'
                                                     }`}
                                             >
-                                                {staking.state.charAt(0).toUpperCase() +
-                                                    staking.state.slice(1)}
+                                                {staking.state ? (staking.state.charAt(0).toUpperCase() + staking.state.slice(1)) : 'Active'}
                                             </span>
                                         </td>
                                     </tr>
@@ -201,7 +196,7 @@ export default function AdminUsdtStakingPage() {
                         </table>
                     </div>
                 )}
-            </div> */}
+            </div>
         </main>
     );
 }

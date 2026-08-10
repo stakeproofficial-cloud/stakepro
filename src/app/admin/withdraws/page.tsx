@@ -15,11 +15,20 @@ export default function AdminWithdrawsPage() {
         dispatch(fetchAdminWithdraws());
     }, [dispatch]);
 
+    const getStatusStr = (w: any) => {
+        const st = (w.status || w.state || 'pending').toString().toLowerCase();
+        if (st === '0' || st === 'pending') return 'pending';
+        if (st === '1' || st === 'approved' || st === 'completed') return 'approved';
+        if (st === '2' || st === 'rejected') return 'rejected';
+        return st;
+    };
+
     const filteredWithdrawals = Array.isArray(withdrawals)
-        ? withdrawals.filter(w => statusFilter === 'all' || w.state === statusFilter)
+        ? withdrawals.filter(w => statusFilter === 'all' || getStatusStr(w) === statusFilter)
         : [];
 
     const copyAddress = (address: string, id: number) => {
+        if (!address) return;
         navigator.clipboard.writeText(address);
         setCopiedId(id);
         setTimeout(() => setCopiedId(null), 2000);
@@ -37,9 +46,10 @@ export default function AdminWithdrawsPage() {
     };
 
     const handleReject = async (id: number) => {
-        if (confirm("Are you sure you want to reject this withdrawal?")) {
+        const reason = prompt("Enter reason for rejection:");
+        if (reason !== null) {
             try {
-                await dispatch(updateWithdrawStatus({ id, action: 'reject' })).unwrap();
+                await dispatch(updateWithdrawStatus({ id, action: 'reject', reason })).unwrap();
                 dispatch(fetchAdminWithdraws());
             } catch (err) {
                 alert("Failed to reject withdrawal");
@@ -47,12 +57,12 @@ export default function AdminWithdrawsPage() {
         }
     };
 
-    const getStatusBadge = (state: string) => {
-        switch (state) {
-            case '0': return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Pending</span>;
-            case '1': return <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Approved</span>;
-            case '2': return <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Rejected</span>;
-            default: return <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">Unknown</span>;
+    const getStatusBadge = (statusStr: string) => {
+        switch (statusStr) {
+            case 'pending': return <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 rounded font-semibold text-xs">Pending</span>;
+            case 'approved': return <span className="px-2.5 py-1 bg-green-100 text-green-800 rounded font-semibold text-xs">Approved</span>;
+            case 'rejected': return <span className="px-2.5 py-1 bg-red-100 text-red-800 rounded font-semibold text-xs">Rejected</span>;
+            default: return <span className="px-2.5 py-1 bg-gray-100 text-gray-800 rounded font-semibold text-xs">{statusStr}</span>;
         }
     };
 
@@ -60,14 +70,18 @@ export default function AdminWithdrawsPage() {
         return <div className="p-6">Loading withdrawals...</div>;
     }
 
+    const pendingCount = withdrawals?.filter(w => getStatusStr(w) === 'pending').length || 0;
+    const approvedCount = withdrawals?.filter(w => getStatusStr(w) === 'approved').length || 0;
+    const rejectedCount = withdrawals?.filter(w => getStatusStr(w) === 'rejected').length || 0;
+
     return (
         <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <h1 className="text-2xl font-bold">Withdrawal Requests</h1>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => setStatusFilter('all')}
-                        className={`px-4 py-2 rounded transition ${statusFilter === 'all'
+                        className={`px-4 py-2 rounded transition text-xs font-semibold ${statusFilter === 'all'
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
@@ -75,31 +89,31 @@ export default function AdminWithdrawsPage() {
                         All ({withdrawals?.length || 0})
                     </button>
                     <button
-                        onClick={() => setStatusFilter('0')}
-                        className={`px-4 py-2 rounded transition ${statusFilter === '0'
+                        onClick={() => setStatusFilter('pending')}
+                        className={`px-4 py-2 rounded transition text-xs font-semibold ${statusFilter === 'pending'
                             ? 'bg-yellow-600 text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                     >
-                        Pending ({withdrawals?.filter(w => w.state === '0').length || 0})
+                        Pending ({pendingCount})
                     </button>
                     <button
-                        onClick={() => setStatusFilter('1')}
-                        className={`px-4 py-2 rounded transition ${statusFilter === '1'
+                        onClick={() => setStatusFilter('approved')}
+                        className={`px-4 py-2 rounded transition text-xs font-semibold ${statusFilter === 'approved'
                             ? 'bg-green-600 text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                     >
-                        Approved ({withdrawals?.filter(w => w.state === '1').length || 0})
+                        Approved ({approvedCount})
                     </button>
                     <button
-                        onClick={() => setStatusFilter('2')}
-                        className={`px-4 py-2 rounded transition ${statusFilter === '2'
+                        onClick={() => setStatusFilter('rejected')}
+                        className={`px-4 py-2 rounded transition text-xs font-semibold ${statusFilter === 'rejected'
                             ? 'bg-red-600 text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                             }`}
                     >
-                        Rejected ({withdrawals?.filter(w => w.state === '2').length || 0})
+                        Rejected ({rejectedCount})
                     </button>
                 </div>
             </div>
@@ -125,70 +139,74 @@ export default function AdminWithdrawsPage() {
                                 </td>
                             </tr>
                         ) : (
-                            filteredWithdrawals.map((withdrawal) => (
-                                <tr key={withdrawal.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 text-sm text-gray-900">{withdrawal.id}</td>
-                                    <td className="px-6 py-4 text-sm">
-                                        <div className="text-gray-900 font-medium">
-                                            {withdrawal.user?.name || `User #${withdrawal.user_id}`}
-                                        </div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            {withdrawal.email || 'No email'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        <div className="font-semibold text-gray-900">
-                                            ${Number(withdrawal.amount).toFixed(2)}
-                                        </div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            Fee (8%): ${(Number(withdrawal.amount) * 0.08).toFixed(2)}
-                                        </div>
-                                        <div className="text-xs text-green-600 font-medium">
-                                            To Pay: ${(Number(withdrawal.amount) * 0.92).toFixed(2)}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-gray-600 font-mono text-xs truncate max-w-[200px]" title={withdrawal.address || 'N/A'}>
-                                                {withdrawal.address || 'N/A'}
-                                            </span>
-                                            {withdrawal.address && (
-                                                <button
-                                                    onClick={() => copyAddress(withdrawal.address!, withdrawal.id)}
-                                                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs transition"
-                                                    title="Copy address"
-                                                >
-                                                    {copiedId === withdrawal.id ? '✓' : '📋'}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">{getStatusBadge(withdrawal.state)}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">
-                                        {new Date(withdrawal.created_at || '').toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        {withdrawal.state === '0' ? (
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => handleApprove(withdrawal.id)}
-                                                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                                                >
-                                                    Approve
-                                                </button>
-                                                <button
-                                                    onClick={() => handleReject(withdrawal.id)}
-                                                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                                                >
-                                                    Reject
-                                                </button>
+                            filteredWithdrawals.map((withdrawal) => {
+                                const stStr = getStatusStr(withdrawal);
+                                const addr = withdrawal.wallet_address_full || withdrawal.wallet_address || withdrawal.address || '';
+                                return (
+                                    <tr key={withdrawal.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 text-sm text-gray-900">#{withdrawal.id}</td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <div className="text-gray-900 font-medium">
+                                                {withdrawal.user?.name || `User #${withdrawal.user_id}`}
                                             </div>
-                                        ) : (
-                                            <span className="text-gray-400">No actions</span>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))
+                                            <div className="text-xs text-gray-500 mt-1">
+                                                {withdrawal.email || withdrawal.email || 'No email'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <div className="font-semibold text-gray-900">
+                                                ${Number(withdrawal.amount).toFixed(2)} USDT
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-1">
+                                                Fee (8%): ${(Number(withdrawal.amount) * 0.08).toFixed(2)}
+                                            </div>
+                                            <div className="text-xs text-green-600 font-medium">
+                                                To Pay: ${(Number(withdrawal.amount) * 0.92).toFixed(2)}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-gray-600 font-mono text-xs truncate max-w-[200px]" title={addr || 'N/A'}>
+                                                    {addr || 'N/A'}
+                                                </span>
+                                                {addr && (
+                                                    <button
+                                                        onClick={() => copyAddress(addr, withdrawal.id)}
+                                                        className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs transition"
+                                                        title="Copy address"
+                                                    >
+                                                        {copiedId === withdrawal.id ? '✓' : '📋'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">{getStatusBadge(stStr)}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-500">
+                                            {withdrawal.created_at ? new Date(withdrawal.created_at).toLocaleString() : 'N/A'}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {stStr === 'pending' ? (
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleApprove(withdrawal.id)}
+                                                        className="px-3 py-1 bg-green-600 text-white rounded text-xs font-semibold hover:bg-green-700 transition"
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleReject(withdrawal.id)}
+                                                        className="px-3 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700 transition"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-400 text-xs">Processed</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         )}
                     </tbody>
                 </table>
