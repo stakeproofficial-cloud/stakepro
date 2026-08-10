@@ -145,7 +145,7 @@ export default function TransactionHistoryView({
         } else if (activeTab === 'withdrawals') {
             list = combinedWithdrawRequests.map((item) => ({
                 ...item,
-                itemType: 'withdrawal',
+                itemType: 'withdraw_request',
                 displayStatus: item.status || item.state || 'pending',
                 displayDate: item.created_at || item.requested_at,
             }));
@@ -217,7 +217,7 @@ export default function TransactionHistoryView({
                     icon: FaArrowDown,
                     sign: '+',
                 };
-            case 'withdrawal':
+            case 'withdraw_request':
             case 'withdraw_request':
                 return {
                     label: 'Withdrawal',
@@ -226,8 +226,6 @@ export default function TransactionHistoryView({
                     sign: '-',
                 };
             case 'reward':
-            case 'profit_earned':
-            case 'profit':
                 return {
                     label: 'Profit Earned',
                     bgColor: 'bg-[#EAB308]/15 border-[#EAB308]/30 text-[#EAB308]',

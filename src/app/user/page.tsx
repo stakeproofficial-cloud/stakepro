@@ -159,7 +159,7 @@ export default function Home() {
                                 <FaUsers className="h-3 w-3" />
                                 <span className="text-[11px] text-[#8B85A3]">Referrals</span>
                             </div>
-                            <p className="mt-1 text-sm font-semibold text-[#F4F2FB]">${refferrals}</p>
+                            <p className="mt-1 text-sm font-semibold text-[#F4F2FB]">{refferrals}</p>
                         </div>
                     </div>
                 </div>
