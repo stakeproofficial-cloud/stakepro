@@ -30,8 +30,8 @@ export default function AdminWithdrawalsPage() {
         try {
             await dispatch(
                 approveRejectWithdrawal({
-                    withdrawal_id: withdrawalId,
-                    status: 'approved',
+                    withdraw_id: withdrawalId,
+                    action: 'approve',
                 })
             ).unwrap();
 
@@ -57,8 +57,8 @@ export default function AdminWithdrawalsPage() {
         try {
             await dispatch(
                 approveRejectWithdrawal({
-                    withdrawal_id: withdrawalId,
-                    status: 'rejected',
+                    withdraw_id: withdrawalId,
+                    action: 'reject',
                     reason,
                 })
             ).unwrap();

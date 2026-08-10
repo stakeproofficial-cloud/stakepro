@@ -118,9 +118,7 @@ export const updateProfile = createAsyncThunk(
     "auth/updateProfile",
     async (payload: { formData: FormData }, { rejectWithValue }) => {
         try {
-            const res = await api.post("/update-profile", payload.formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const res = await api.post("/update-profile", payload.formData);
             return res.data;
         } catch (err: any) {
             return rejectWithValue(err?.response?.data || { message: err.message });
