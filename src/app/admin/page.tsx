@@ -14,7 +14,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         dispatch(fetchUsers() as any);
-        dispatch(fetchTransactions());
+        dispatch(fetchTransactions({ page: 1, limit: 50 }) as any);
         dispatch(fetchAdminWithdraws());
     }, [dispatch]);
 
