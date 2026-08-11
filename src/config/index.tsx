@@ -8,7 +8,7 @@ const metadata = {
     name: 'stakepro',
     description: 'stakepro',
     url: 'https://www.stakepro.org',
-    icons: ['https://stakepro.org/logo.jpeg']
+    icons: ['https://stakepro.org/logo.png']
 }
 
 export const networks = [bsc] as [AppKitNetwork, ...AppKitNetwork[]];

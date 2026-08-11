@@ -14,7 +14,7 @@ const metadata = {
     name: 'stakepro',
     description: 'stakepro',
     url: 'https://stakepro.org',
-    icons: ['https://stakepro.org/logo.jpeg']
+    icons: ['https://stakepro.org/logo.png']
 }
 
 // Create the modal
