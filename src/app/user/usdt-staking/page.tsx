@@ -12,27 +12,29 @@ import { fetchProfile } from '@/store/authSlice';
 import { parseDecimal } from '@/utils/validators';
 import { FaCoins, FaBolt, FaLayerGroup, FaClock, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
 
-// Helper to get current timestamp in EDT (America/New_York)
-function getNowMsInEDT(): number {
-    const now = new Date();
-    const edtStr = now.toLocaleString('en-US', {
-        timeZone: 'America/New_York',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-    });
-    const [datePart, timePart] = edtStr.split(', ');
-    const [month, day, year] = datePart.split('/');
-    return new Date(`${year}-${month}-${day}T${timePart}`).getTime();
+// MySQL returns timestamps in SYSTEM timezone (currently UTC-04:00).
+// Treat the database timestamp as UTC-04:00 when calculating the countdown.
+
+function mysqlSystemTimeToMs(dateStr: string): number {
+    // MySQL format: 2026-08-12 01:30:00
+    const normalized = dateStr.replace(' ', 'T');
+
+    // If string already has a timezone offset (e.g. Z or -04:00), parse directly
+    if (normalized.includes('Z') || /[+-]\d{2}:?\d{2}$/.test(normalized)) {
+        return new Date(normalized).getTime();
+    }
+
+    // Explicitly tell JavaScript that this timestamp is in UTC-04:00
+    return new Date(`${normalized}-04:00`).getTime();
 }
 
-// Live Countdown hook comparing target EDT time against current time in EDT
 function useCountdown(targetDateStr?: string | null) {
-    const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number; isPast: boolean }>({
+    const [timeLeft, setTimeLeft] = useState<{
+        hours: number;
+        minutes: number;
+        seconds: number;
+        isPast: boolean;
+    }>({
         hours: 0,
         minutes: 0,
         seconds: 0,
@@ -43,26 +45,42 @@ function useCountdown(targetDateStr?: string | null) {
         if (!targetDateStr) return;
 
         const updateTimer = () => {
-            const str = targetDateStr.replace(' ', 'T');
-            const targetDate = new Date(str);
-            if (isNaN(targetDate.getTime())) return;
+            const targetMs = mysqlSystemTimeToMs(targetDateStr);
 
-            const targetMs = targetDate.getTime();
-            const nowMs = getNowMsInEDT(); // Current time in EDT
-            const diff = targetMs - nowMs;
+            if (Number.isNaN(targetMs)) return;
+
+            // Date.now() is an absolute timestamp.
+            // targetMs is also an absolute timestamp after applying -04:00.
+            const diff = targetMs - Date.now();
 
             if (diff <= 0) {
-                setTimeLeft({ hours: 0, minutes: 0, seconds: 0, isPast: true });
-            } else {
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                setTimeLeft({ hours, minutes, seconds, isPast: false });
+                setTimeLeft({
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    isPast: true,
+                });
+                return;
             }
+
+            const totalSeconds = Math.floor(diff / 1000);
+
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            setTimeLeft({
+                hours,
+                minutes,
+                seconds,
+                isPast: false,
+            });
         };
 
         updateTimer();
+
         const interval = setInterval(updateTimer, 1000);
+
         return () => clearInterval(interval);
     }, [targetDateStr]);
 
